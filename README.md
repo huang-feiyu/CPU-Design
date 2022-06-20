@@ -42,8 +42,9 @@
 
 2. Digit 无显示
 
-利用 LED 测试解码是否正确, 操作符解码错误.
+利用 LED 测试解码是否正确, <s>操作符解码错误.</s> => 非必要初始化错误
+
+`andi a3, s0, 0x8` => `addi a3, s0, 0x0`
 
 
 ![24 条指令](https://hitsz-cslab.gitee.io/cpu/lab1/assets/t2-1.png)
-
