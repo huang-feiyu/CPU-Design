@@ -23,14 +23,14 @@
 
 * 取值单元
     * PC
-    * NPC: (next PC) 下一条指令的地址, `PC+4` or `ALU.C`<br/>其中 `Branch` 综合了 `PCSel`, `BrUnSel`, `BrEQ`, `BrLT`
+    * NPC: (next PC) 下一条指令的地址, `PC+4` or `ALU.C`<br/>其中 `Branch` 综合了 `PCSel`, `BrSel`, `BrEQ`, `BrLT`
     * IROM: 指令存储器
 * 译码单元
     * RF: 寄存器堆
     * SEXT: 立即数 imm-gen<br/>`ImmSel` 是指令类型
 * 执行单元
     * ALU: 计算单元<br/>`ALUSel_LUI` 计算 `0+imm`
-    * BrUN: 比较器<br/>`BrUnSel` 表示为哪一个操作
+    * BrUN: 比较器<br/>`BrSel` 表示为哪一个操作, `BrUn` 是无符号数比较
 * 存储单元
     * DRAM: 数据存储器<br/>`Mem` 表示有 **读或写** 操作, `MemW` 表示为 **写** 操作.
 * Attention
@@ -95,3 +95,9 @@
 ![24 条指令](https://hitsz-cslab.gitee.io/cpu/lab1/assets/t2-1.png)
 
 ## lab2
+
+> 单周期 CPU 设计
+
+### lab2-1
+
+> [lab2-1](./lab2-1/): 单周期 CPU 设计(IF, ID)
