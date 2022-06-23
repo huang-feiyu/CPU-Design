@@ -17,20 +17,22 @@
 
 可以根据 [SoC.circ](./lab1/RISCV-SoC.circ) 做出类似的 CPU.(?)
 
+<details><img src="https://user-images.githubusercontent.com/70138429/175284762-139a6230-bb9d-4edd-a695-b8c4e9da8340.png" alt="datapath"><br/><img src="https://user-images.githubusercontent.com/70138429/175284806-0f3376d0-163e-4c55-8ca6-7eb1608380ce.png" alt="control"></details>
+
 ---
 
 > 零碎的实现笔记.
 
 * 取值单元
     * PC
-    * NPC: (next PC) 下一条指令的地址, `PC+4` or `ALU.C`<br/>其中 `Branch` 综合了 `PCSel`, `BrUnSel`, `BrEQ`, `BrLT`
+    * NPC: (next PC) 下一条指令的地址, `PC+4` or `ALU.C`<br/>其中 `Branch` 综合了 `PCSel`, `BrSel`, `BrEQ`, `BrLT`
     * IROM: 指令存储器
 * 译码单元
     * RF: 寄存器堆
     * SEXT: 立即数 imm-gen<br/>`ImmSel` 是指令类型
 * 执行单元
     * ALU: 计算单元<br/>`ALUSel_LUI` 计算 `0+imm`
-    * BrUN: 比较器<br/>`BrUnSel` 表示为哪一个操作
+    * BrUN: 比较器<br/>`BrSel` 表示为哪一个操作, `BrUn` 是无符号数比较
 * 存储单元
     * DRAM: 数据存储器<br/>`Mem` 表示有 **读或写** 操作, `MemW` 表示为 **写** 操作.
 * Attention
@@ -56,9 +58,7 @@
 > 原码输入
 
 * SW 为拨码开关: `[0:23]` => 运算符 + 操作数A + 操作数B
-    * \[23:21]: 运算符.
-      
-        * 1:`+` 2:`-` 3:`&` 4:`|` 5:`<<` 6:`>>` 7:`*`
+    * \[23:21]: 运算符.<br/>1:`+` 2:`-` 3:`&` 4:`|` 5:`<<` 6:`>>` 7:`*`
     * \[20:16]: None
     * \[15:8]: 操作数B
     * \[7:0]: 操作数A
@@ -97,3 +97,71 @@
 ![24 条指令](https://hitsz-cslab.gitee.io/cpu/lab1/assets/t2-1.png)
 
 ## lab2
+
+> 单周期 CPU 设计
+
+总体上, 需要如下模块:
+* top module:<br/>`miniRV.v` 实例化、连接各部件
+* clock:<br/>`cpuclk.v` 系统时钟(25MHz)
+* memory:<br/>`prgrom.v` 指令存储器(64KB)<br/>`dmem.v` 数据存储器(64KB)
+* IF: defined in [lab2-1](#lab2-1)
+* ID: defined in [lab2-1](#lab2-1)
+
+```verilog
+// cpuclk.v usage
+`timescale 1ns / 1ps
+module cpuclk_sim();
+    // input
+    reg fpga_clk = 0;
+    // output
+    wire clk_lock;
+    wire pll_clk;
+    wire cpu_clk;
+
+    always #5 fpga_clk = ~fpga_clk;
+
+    cpuclk UCLK (
+        .clk_in1    (fpga_clk),
+        .locked     (clk_lock),
+        .clk_out1   (pll_clk)
+    );
+
+    assign cpu_clk = pll_clk & clk_lock;
+
+endmodule
+
+// IROM usage
+    //......
+
+    wire [31:0] instruction;
+
+    // 64KB IROM
+    prgrom U0_irom (
+        .a      (pc_i[15:2]),   // input  wire [13:0] a
+        .spo    (instruction)   // output wire [31:0] spo
+    );
+
+    ......
+endmodule
+
+// 64KB DRAM
+dram U_dram (
+    .clk    (clk_i),            // input  wire clka
+    .a      (addr_i[15:2]),     // input  wire [13:0] addra
+    .spo    (rd_data_o),        // output wire [31:0] douta
+    .we     (memwr_i),          // input  wire [0:0] wea
+    .d      (wr_data_i)         // input  wire [31:0] dina
+);
+```
+
+### lab2-1
+
+> [lab2-1](./lab2-1/): 单周期 CPU 设计(IF, ID)
+
+* IF
+    * `pc_reg.v`: PC
+    * `next_pc.v`: NPC
+    * `progrom.xci`: IROM
+* ID
+    * `reg_file.v`: RF
+    * `imm_gen.v`: SEXT
