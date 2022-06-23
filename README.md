@@ -17,6 +17,8 @@
 
 可以根据 [SoC.circ](./lab1/RISCV-SoC.circ) 做出类似的 CPU.(?)
 
+<details><img src="https://user-images.githubusercontent.com/70138429/175284762-139a6230-bb9d-4edd-a695-b8c4e9da8340.png" alt="datapath"><img src="https://user-images.githubusercontent.com/70138429/175284806-0f3376d0-163e-4c55-8ca6-7eb1608380ce.png" alt="control"></details>
+
 ---
 
 > 零碎的实现笔记.
@@ -98,6 +100,68 @@
 
 > 单周期 CPU 设计
 
+总体上, 需要如下模块:
+* top module:<br/>`miniRV.v` 实例化、连接各部件
+* clock:<br/>`cpuclk.v` 系统时钟(25MHz)
+* memory:<br/>`prgrom.v` 指令存储器(64KB)<br/>`dmem.v` 数据存储器(64KB)
+* IF:<br/>TODO:
+
+```verilog
+// cpuclk.v usage
+`timescale 1ns / 1ps
+module cpuclk_sim();
+    // input
+    reg fpga_clk = 0;
+    // output
+    wire clk_lock;
+    wire pll_clk;
+    wire cpu_clk;
+
+    always #5 fpga_clk = ~fpga_clk;
+
+    cpuclk UCLK (
+        .clk_in1    (fpga_clk),
+        .locked     (clk_lock),
+        .clk_out1   (pll_clk)
+    );
+
+    assign cpu_clk = pll_clk & clk_lock;
+
+endmodule
+
+// IROM usage
+    //......
+
+    wire [31:0] instruction;
+
+    // 64KB IROM
+    prgrom U0_irom (
+        .a      (pc_i[15:2]),   // input wire [13:0] a
+        .spo    (instruction)   // output wire [31:0] spo
+    );
+
+    ......
+endmodule
+
+// 64KB DRAM
+dram U_dram (
+    .clk    (clk_i),            // input wire clka
+    .a      (addr_i[15:2]),     // input wire [13:0] addra
+    .spo    (rd_data_o),        // output wire [31:0] douta
+    .we     (memwr_i),          // input wire [0:0] wea
+    .d      (wr_data_i)         // input wire [31:0] dina
+);
+```
+
 ### lab2-1
 
 > [lab2-1](./lab2-1/): 单周期 CPU 设计(IF, ID)
+
+#### IF
+
+* PC: program counter
+* NPC: next program counter
+* IROM: instruction ROM
+
+
+
