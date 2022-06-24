@@ -141,7 +141,7 @@ endmodule
         .spo    (instruction)   // output wire [31:0] spo
     );
 
-    ......
+    //......
 endmodule
 
 // 64KB DRAM
@@ -159,9 +159,13 @@ dram U_dram (
 > [lab2-1](./lab2-1/): 单周期 CPU 设计(IF, ID)
 
 * IF
-    * `pc_reg.v`: PC
+    * `pc_reg.v`: PC<br/>PC 的初始值是 CPU 复位后执行的首条指令的地址
     * `next_pc.v`: NPC
     * `progrom.xci`: IROM
+    * TODO: 复位后为第一条指令地址
 * ID
     * `reg_file.v`: RF
     * `imm_gen.v`: SEXT
+
+TODO: test for lab2-1
+
