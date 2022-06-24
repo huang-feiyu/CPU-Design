@@ -29,7 +29,7 @@
     * IROM: 指令存储器
 * 译码单元
     * RF: 寄存器堆
-    * SEXT: 立即数 imm-gen<br/>`ImmSel` 是指令类型
+    * SEXT: 立即数 imm-gen<br/>`ImmSel` 是指令类型<br/>移位需要单独设置, 仅存在 5 位
 * 执行单元
     * ALU: 计算单元<br/>`ALUSel_LUI` 计算 `0+imm`
     * BrUN: 比较器<br/>`BrSel` 表示为哪一个操作, `BrUn` 是无符号数比较
@@ -159,13 +159,13 @@ dram U_dram (
 > [lab2-1](./lab2-1/): 单周期 CPU 设计(IF, ID)
 
 * IF
-    * `pc_reg.v`: PC<br/>PC 的初始值是 CPU 复位后执行的首条指令的地址
-    * `next_pc.v`: NPC
+    * `pc_reg.v`: PC(Combinatorial logic)<br/>PC 的初始值是 CPU 复位后执行的首条指令的地址
+    * `next_pc.v`: NPC(Sequential logic)
     * `progrom.xci`: IROM
     * TODO: 复位后为第一条指令地址
 * ID
-    * `reg_file.v`: RF
-    * `imm_gen.v`: SEXT
+    * `reg_file.v`: RF()
+    * `imm_gen.v`: SEXT()
 
 TODO: test for lab2-1
 
