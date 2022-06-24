@@ -30,7 +30,7 @@ assign rd2_o = regfile[rs2_i];
 always @(posedge clk or negedge rst_n_i) begin
     if (~rst_n_i) begin
         for (i = 0; i < 31; i = i + 1) begin
-            regfile[i] <= 0;
+            regfile[i] <= 32'b0;
         end
     end else begin
         if (regWEn_i)

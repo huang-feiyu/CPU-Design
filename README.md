@@ -8,6 +8,8 @@
 
 ## Prepare
 
+<details><summary>风格简介</summary>1. 为了看得清晰, 控制信号使用驼峰命名法</details>
+
 > [Sheet.xlsx](Datapath_Control_Sheet.xlsx): 数据通路表 与 控制信号取值表
 
 使用 Excel 建立数据通路表 与 控制信号取值表.
@@ -29,7 +31,7 @@
     * IROM: 指令存储器
 * 译码单元
     * RF: 寄存器堆
-    * SEXT: 立即数 imm-gen<br/>`ImmSel` 是指令类型<br/>移位需要单独设置, 仅存在 5 位
+    * SEXT: 立即数 imm-gen<br/>`ImmSel` 是指令类型<br/>移位需要单独设置, 仅存在 5 位立即数.
 * 执行单元
     * ALU: 计算单元<br/>`ALUSel_LUI` 计算 `0+imm`
     * BrUN: 比较器<br/>`BrSel` 表示为哪一个操作, `BrUn` 是无符号数比较
@@ -37,6 +39,7 @@
     * DRAM: 数据存储器<br/>`Mem` 表示有 **读或写** 操作, `MemW` 表示为 **写** 操作.
 * Attention
     * `lui`: ALU_op 为 `0+SEXT.ext`
+    * `lw`: 存入时需要符号扩展, `R[rd]={32'bM[](31),M[R[rs1]+imm](31:0)}`
     * 一般来说, `1b'1` 代表**使能**
 
 ### lab1
@@ -104,55 +107,15 @@
 * top module:<br/>`miniRV.v` 实例化、连接各部件
 * clock:<br/>`cpuclk.v` 系统时钟(25MHz)
 * memory:<br/>`prgrom.v` 指令存储器(64KB)<br/>`dmem.v` 数据存储器(64KB)
+* control: `control.v` defined in [control](#control)
 * IF: defined in [lab2-1](#lab2-1)
 * ID: defined in [lab2-1](#lab2-1)
 
-```verilog
-// cpuclk.v usage
-`timescale 1ns / 1ps
-module cpuclk_sim();
-    // input
-    reg fpga_clk = 0;
-    // output
-    wire clk_lock;
-    wire pll_clk;
-    wire cpu_clk;
+### control
 
-    always #5 fpga_clk = ~fpga_clk;
+`control.v` 由于各个模块测试都需要控制器, 故在此处实现, 定义都在 [Sheet.xlsx](Datapath_Control_Sheet.xlsx) 中.
 
-    cpuclk UCLK (
-        .clk_in1    (fpga_clk),
-        .locked     (clk_lock),
-        .clk_out1   (pll_clk)
-    );
-
-    assign cpu_clk = pll_clk & clk_lock;
-
-endmodule
-
-// IROM usage
-    //......
-
-    wire [31:0] instruction;
-
-    // 64KB IROM
-    prgrom U0_irom (
-        .a      (pc_i[15:2]),   // input  wire [13:0] a
-        .spo    (instruction)   // output wire [31:0] spo
-    );
-
-    //......
-endmodule
-
-// 64KB DRAM
-dram U_dram (
-    .clk    (clk_i),            // input  wire clka
-    .a      (addr_i[15:2]),     // input  wire [13:0] addra
-    .spo    (rd_data_o),        // output wire [31:0] douta
-    .we     (memwr_i),          // input  wire [0:0] wea
-    .d      (wr_data_i)         // input  wire [31:0] dina
-);
-```
+为了方便起见, 这里直接将 32 位指令全部作为 `input` 传入控制器.
 
 ### lab2-1
 
