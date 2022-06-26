@@ -110,6 +110,9 @@
 * control: `control.v` defined in [control](#control)
 * IF: defined in [lab2-1](#lab2-1)
 * ID: defined in [lab2-1](#lab2-1)
+* EXE: defined in [lab2-2](#lab2-2)
+* MEM: defined in [lab2-2](#lab2-2)
+* WB: defined in [lab2-2](#lab2-2)
 
 ### control
 
@@ -119,16 +122,24 @@
 
 ### lab2-1
 
-> [lab2-1](./lab2-1/): 单周期 CPU 设计(IF, ID)
+> [lab2](./lab2): 单周期 CPU 设计(IF, ID)
 
 * IF
     * `pc_reg.v`: PC(Combinatorial logic)<br/>PC 的初始值是 CPU 复位后执行的首条指令的地址
     * `next_pc.v`: NPC(Sequential logic)
-    * `progrom.xci`: IROM
-    * TODO: 复位后为第一条指令地址
+    * `progrom.xci`: IROM(Combinatorial logic)
 * ID
-    * `reg_file.v`: RF()
-    * `imm_gen.v`: SEXT()
+    * `reg_file.v`: RF(Sequential logic)
+    * `imm_gen.v`: SEXT(Combinatorial logic)
 
 TODO: test for lab2-1
 
+### lab2-2
+
+> [lab2](./lab2): 单周期 CPU 设计(EXE, MEM, WB)
+
+* EXE: `exe_top.v`
+    * `alu`: ALU(Combinatorial logic)
+    * `comp`: COMP(Combinatorial logic)
+* MEM
+* WB: defined before, in `reg_file.v`
