@@ -6,7 +6,7 @@ module next_pc(
     input             branch_i, // branch_i <= `PCSel`, `BrSel`, `BrEQ`, `BrLT`
 
     output reg [31:0] npc_o   ,
-    output reg [31:0] pc4_o     // for jalr or jal
+    output     [31:0] pc4_o     // for jalr or jal
 );
 
 // pc4
