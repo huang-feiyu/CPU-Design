@@ -114,6 +114,8 @@
 * MEM: defined in [lab2-2](#lab2-2)
 * WB: defined in [lab2-2](#lab2-2)
 
+<details><summary>Hand Painted Datapath</summary><img src="https://user-images.githubusercontent.com/70138429/175853036-c63c7e62-39e5-4656-859e-8fb768e55f46.png" alt="datapath"></details>
+
 ### control
 
 `control.v` 由于各个模块测试都需要控制器, 故在此处实现, 定义都在 [Sheet.xlsx](Datapath_Control_Sheet.xlsx) 中.
@@ -131,8 +133,6 @@
 * ID
     * `reg_file.v`: RF(Sequential logic)
     * `imm_gen.v`: SEXT(Combinatorial logic)
-
-TODO: test for lab2-1
 
 ### lab2-2
 

@@ -13,13 +13,13 @@ always @(posedge clk_i or negedge rst_n_i) begin
     // DEBUG: `rst_n`; timing might be wrong, refers to xyfJASON
 
     // reset active low
-    * NOTE: after reset, address is the address of first instruction
+    // NOTE: after reset, address is the address of first instruction
     if (~rst_n_i) begin
-        pc_o <= 31'b0;
-    end else if (en) begin
-        pc_o <= npc_i;
+        pc_o <= 32'b0;
+    // end else if (en) begin
+    //     pc_o <= npc_i;
     end else begin
-        pc_o <= pc_o;
+        pc_o <= npc_i;
     end
 end
 
