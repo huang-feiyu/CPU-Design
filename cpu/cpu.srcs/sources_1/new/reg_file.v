@@ -29,19 +29,19 @@ assign rd2_o = regfile[rs2_i];
 // write to RF
 always @(posedge clk_i or negedge rst_n_i) begin
     if (~rst_n_i) begin
-        for (i = 0; i < 31; i = i + 1) begin
+        for (i = 0; i <= 31; i = i + 1) begin
             regfile[i] <= 32'b0;
         end
     end else begin
         if (regWEn_i)
             case (wbSel_i)
-                `WBSEL_NON: regfile[wr_i] <= regfile[i];
-                `WBSEL_ALU: regfile[wr_i] <= aluC_i    ;
-                `WBSEL_MEM: regfile[wr_i] <= mem_rd_i  ;
-                `WBSEL_PC4: regfile[wr_i] <= pc4_i     ;
-                default   : regfile[wr_i] <= regfile[i];
+                `WBSEL_NON: regfile[wr_i] <= regfile[wr_i];
+                `WBSEL_ALU: regfile[wr_i] <= aluC_i       ;
+                `WBSEL_MEM: regfile[wr_i] <= mem_rd_i     ;
+                `WBSEL_PC4: regfile[wr_i] <= pc4_i        ;
+                default   : regfile[wr_i] <= regfile[wr_i];
             endcase
-        else                regfile[wr_i] <= regfile[i];
+        else                regfile[wr_i] <= regfile[wr_i];
     end
     regfile[0] <= 0;
 end

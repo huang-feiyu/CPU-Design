@@ -36,7 +36,7 @@ wire [2:0] brSel ;
 wire [3:0] aluSel;
 
 // instantiate in a specific order
-cpuclk CPU_clk (
+cpuclk CPU_CLK (
     .clk_in1  (fpga_clk_i),
     .clk_out1 (clk)
 );
@@ -95,6 +95,7 @@ exe_top CPU_EXE (
     .bSel_i   (bSel)  ,
     .aluSel_i (aluSel),
     .brSel_i  (brSel) ,
+    .pcSel_i  (pcSel) ,
     .brUn_i   (brUn)  ,
     .aluC_o   (aluC)  ,
     .branch_o (branch)

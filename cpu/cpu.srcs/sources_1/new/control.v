@@ -58,7 +58,7 @@ assign regWEn_o =  (op == OPCODE_R     )
 assign aSel_o =   (op == OPCODE_SB)
                 ||(op == OPCODE_U )
                 ||(op == OPCODE_UJ) ?
-                `ASEL_R : `ASEL_PC  ;
+                `ASEL_PC : `ASEL_R  ;
 
 assign bSel_o = op == OPCODE_R   ?
                 `BSEL_R : `BSEL_I;
@@ -105,12 +105,13 @@ end
 always @(*) begin
     if (op == OPCODE_I_ALU || op == OPCODE_R) begin
         case (funct3)
-            FUNCT3_AND: aluSel_o =  `ALUSEL_AND;
-            FUNCT3_OR : aluSel_o =  `ALUSEL_OR ;
-            FUNCT3_XOR: aluSel_o =  `ALUSEL_XOR;
-            FUNCT3_SLL: aluSel_o =  `ALUSEL_SLL;
-            FUNCT3_AS_: aluSel_o =  funct3 == FUNCT7_ADD ? `ALUSEL_ADD : `ALUSEL_SUB;
-            FUNCT3_SR_: aluSel_o =  funct3 == FUNCT7_SRL ? `ALUSEL_SRL : `ALUSEL_SRA;
+            FUNCT3_AND: aluSel_o = `ALUSEL_AND;
+            FUNCT3_OR : aluSel_o = `ALUSEL_OR ;
+            FUNCT3_XOR: aluSel_o = `ALUSEL_XOR;
+            FUNCT3_SLL: aluSel_o = `ALUSEL_SLL;
+            FUNCT3_AS_: aluSel_o = (funct7 == FUNCT7_SUB) && (op == OPCODE_R) ?
+                                    `ALUSEL_SUB : `ALUSEL_ADD;
+            FUNCT3_SR_: aluSel_o = funct7 == FUNCT7_SRL ? `ALUSEL_SRL : `ALUSEL_SRA;
         endcase
     end else if (op == OPCODE_U) begin
         aluSel_o = `ALUSEL_LUI;
