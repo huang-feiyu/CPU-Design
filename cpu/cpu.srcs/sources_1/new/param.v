@@ -19,6 +19,7 @@
     // ImmSel: determine which type the instruction is
     `define IMMSEL_R   'b000
     `define IMMSEL_I   'b001
+    `define IMMSEL_IS  'b110
     `define IMMSEL_S   'b010
     `define IMMSEL_SB  'b011
     `define IMMSEL_U   'b100
