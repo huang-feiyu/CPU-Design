@@ -12,21 +12,21 @@ module alu(
     output reg [31:0] aluC_o
 );
 
-wire [31:0] a = (aSel_i == param.ASEL_R) ? rd1_i : pc_i ;
-wire [31:0] b = (bSel_i == param.BSEL_R) ? rd2_i : ext_i;
+wire [31:0] a = (aSel_i == `ASEL_R) ? rd1_i : pc_i ;
+wire [31:0] b = (bSel_i == `BSEL_R) ? rd2_i : ext_i;
 
 always @(*) begin
     case (aluSel_i)
-        param.ALUSEL_ADD: aluC_o = a + b ;
-        param.ALUSEL_SUB: aluC_o = a - b ;
-        param.ALUSEL_AND: aluC_o = a & b ;
-        param.ALUSEL_OR : aluC_o = a | b ;
-        param.ALUSEL_XOR: aluC_o = a ^ b ;
-        param.ALUSEL_SLL: aluC_o = a << b; // NOTE: naive shift-op might be wrong
-        param.ALUSEL_SRL: aluC_o = a >> b;
-        param.ALUSEL_SRA: aluC_o = $signed(a) >>> b;
-        param.ALUSEL_LUI: aluC_o = b; // rd <- {imm[31:12], 12'b0}
-        default:          aluC_o = aluC_o;
+        `ALUSEL_ADD: aluC_o = a + b ;
+        `ALUSEL_SUB: aluC_o = a - b ;
+        `ALUSEL_AND: aluC_o = a & b ;
+        `ALUSEL_OR : aluC_o = a | b ;
+        `ALUSEL_XOR: aluC_o = a ^ b ;
+        `ALUSEL_SLL: aluC_o = a << b; // NOTE: naive shift-op might be wrong
+        `ALUSEL_SRL: aluC_o = a >> b;
+        `ALUSEL_SRA: aluC_o = $signed(a) >>> b;
+        `ALUSEL_LUI: aluC_o = b; // rd <- {imm[31:12], 12'b0}
+        default:     aluC_o = aluC_o;
     endcase
 end
 

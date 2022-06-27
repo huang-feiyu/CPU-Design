@@ -11,10 +11,10 @@ module mini_rv(
 wire clk;
 
 // signals IF generates
-wire pc_en      ;
-wire [31:0] pc4 ;
-wire [31:0] npc ;
-wire [31:0] inst;
+wire        pc_en;
+wire [31:0] pc4  ;
+wire [31:0] npc  ;
+wire [31:0] inst ;
 
 // signals ID & WB generates
 wire [31:0] rd1;
@@ -23,7 +23,7 @@ wire [31:0] ext;
 
 // signals EXE generates
 wire [31:0] aluC  ;
-wire [31:0] branch;
+wire        branch;
 
 // signals MEM generates
 wire [31:0] mem_rd;

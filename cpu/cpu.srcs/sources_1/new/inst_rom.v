@@ -6,7 +6,7 @@ module inst_rom(
 );
 
 prgrom U_irom (
-    .a   (pc_i),
+    .a   (pc_i[15:2]),
     .spo (inst_o)
 );
 

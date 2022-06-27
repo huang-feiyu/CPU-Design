@@ -15,9 +15,9 @@ assign pc4_o = pc_i + 32'h4;
 // npc_o
 always @(*) begin
     case (branch_i)
-        param.BRANCH_IMM: npc_o = {aluC_i[31:1], 1'b0};
-        param.BRANCH_PC4: npc_o = pc_i + 32'h4;
-        default:          npc_o = npc_o;
+        `BRANCH_IMM: npc_o = {aluC_i[31:1], 1'b0};
+        `BRANCH_PC4: npc_o = pc_i + 32'h4;
+        default:     npc_o = npc_o;
     endcase
 end
 

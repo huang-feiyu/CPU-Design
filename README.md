@@ -162,4 +162,19 @@
 
 仿真测试:
 
-TODO:
+0. 宏定义出错
+
+Vivado 无法识别定义的宏.
+
+```error
+'BRANCH_IMM' is not declared [.../next_pc.v:18]
+```
+
+将其包含到文件中、将其内容复制到文件中, 都没有效果. ~~也许不能够在 `case` 中用宏?~~
+
+解决方案: use "`MACRO_NAME" instead.
+
+1. I 型指令
+
+> [I-type](./test/riscv/I_type_insts.asm)
+
