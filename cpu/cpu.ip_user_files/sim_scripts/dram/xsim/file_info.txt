@@ -1,2 +1,0 @@
-dram.v,verilog,xil_defaultlib,../../../../cpu.srcs/sources_1/ip/dram/sim/dram.v,
-glbl.v,Verilog,xil_defaultlib,glbl.v
