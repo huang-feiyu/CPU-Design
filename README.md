@@ -108,7 +108,7 @@
 > 单周期 CPU 设计
 
 总体上, 需要如下模块:
-* top module:<br/>`miniRV.v` 实例化、连接各部件
+* top module:<br/>`mini_rv.v` 实例化、连接各部件
 * clock:<br/>`cpuclk.v` 系统时钟(25MHz)
 * memory:<br/>`prgrom.v` 指令存储器(64KB)<br/>`dmem.v` 数据存储器(64KB)
 * control: `control.v` defined in [control](#control)
@@ -118,7 +118,7 @@
 * MEM: defined in [lab2-2](#lab2-2)
 * WB: defined in [lab2-2](#lab2-2)
 
-<details><summary>Hand Painted Datapath</summary><img src="https://user-images.githubusercontent.com/70138429/175853036-c63c7e62-39e5-4656-859e-8fb768e55f46.png" alt="datapath"></details>
+<details><summary>Hand Painted Datapath</summary><img src="https://user-images.githubusercontent.com/70138429/175857109-cdb5b3ff-8d3f-4a66-a527-b0c3e89ee959.png" alt="datapath"></details>
 
 ### control
 
@@ -147,3 +147,19 @@
     * `comp`: COMP(Combinatorial logic)
 * MEM
 * WB: defined before, in `reg_file.v`
+
+### lab2-3
+
+> [lab2](./lab2): 单周期 CPU 设计(Control, Simulation)
+
+在本模块将会把各个 Module 组合起来, 组成一个 CPU 进行仿真测试.
+
+* `mini_rv.v`: 将各个模块实例化<br/>在实现本模块之前, 需要先将 `dram.xci` 用 `data_ram.v` 封装起来 (虽然没有必要, 我还是将 `prgrom.xci` 也用 `inst_rom.v` 封装起来).
+
+经过简单的仿真测试后, 将会进行 [Trace 测试](https://hitsz-cslab.gitee.io/cpu/trace/trace/).
+
+---
+
+仿真测试:
+
+TODO:

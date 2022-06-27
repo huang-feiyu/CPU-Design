@@ -19,7 +19,7 @@ module exe_top(
 wire brEQ_t; // t means temp
 wire brLT_t;
 
-alu exe_alu(
+alu exe_alu (
     .rd1_i    (rd1_i)   ,
     .rd2_i    (rd2_i)   ,
     .pc_i     (pc_i)    ,
@@ -30,7 +30,7 @@ alu exe_alu(
     .aluC_o   (aluC_o)
 );
 
-comp exe_comp(
+comp exe_comp (
     .rd1_i  (rd1_i) ,
     .rd2_i  (rd2_i) ,
     .brUn_i (brUn_i),

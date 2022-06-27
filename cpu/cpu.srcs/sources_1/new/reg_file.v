@@ -5,13 +5,13 @@ module reg_file(
     input             rst_n_i ,
     input      [4 :0] rs1_i   ,
     input      [4 :0] rs2_i   ,
-    input      [4 :0] wd_i    ,
+    input      [4 :0] wr_i    ,
 
     // write data
     input             regWEn_i,
     input      [2 :0] wbSel_i ,
     input      [31:0] aluC_i  ,
-    input      [31:0] mem_i   ,
+    input      [31:0] mem_rd_i,
     input      [31:0] pc4_i   ,
 
     output     [31:0] rd1_o   ,
@@ -35,13 +35,13 @@ always @(posedge clk_i or negedge rst_n_i) begin
     end else begin
         if (regWEn_i)
         case (wbSel_i)
-            param.WBSEL_NON: regfile[wd_i] <= regfile[i];
-            param.WBSEL_ALU: regfile[wd_i] <= aluC_i    ;
-            param.WBSEL_MEM: regfile[wd_i] <= mem_i     ;
-            param.WBSEL_PC4: regfile[wd_i] <= pc4_i     ;
-            default:         regfile[wd_i] <= regfile[i];
+            param.WBSEL_NON: regfile[wr_i] <= regfile[i];
+            param.WBSEL_ALU: regfile[wr_i] <= aluC_i    ;
+            param.WBSEL_MEM: regfile[wr_i] <= mem_rd_i  ;
+            param.WBSEL_PC4: regfile[wr_i] <= pc4_i     ;
+            default:         regfile[wr_i] <= regfile[i];
         endcase
-        else                 regfile[wd_i] <= regfile[i];
+        else                 regfile[wr_i] <= regfile[i];
     end
 end
 
