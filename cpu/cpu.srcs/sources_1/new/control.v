@@ -45,8 +45,7 @@ wire [7:0] funct7 = inst_i[31:25];
 
 assign pcSel_o =   (op == OPCODE_I_JALR)
                 || (op == OPCODE_UJ    ) ?
-                param.PCSEL_IMM :
-                param.PCSEL_PC4 ;
+                `PCSEL_IMM : `PCSEL_PC4  ;
 
 assign regWEn_o =  (op == OPCODE_R     )
                 || (op == OPCODE_I_ALU )
@@ -54,56 +53,51 @@ assign regWEn_o =  (op == OPCODE_R     )
                 || (op == OPCODE_I_JALR)
                 || (op == OPCODE_U     )
                 || (op == OPCODE_UJ    ) ?
-                param.REGWEN_EN :
-                param.REGWEN_NON;
+                `REGWEN_EN : `REGWEN_NON ;
 
 assign aSel_o =   (op == OPCODE_SB)
                 ||(op == OPCODE_U )
                 ||(op == OPCODE_UJ) ?
-                param.ASEL_R :
-                param.ASEL_PC;
+                `ASEL_PC : `ASEL_R  ;
 
-assign bSel_o = op == OPCODE_R ?
-                param.BSEL_R :
-                param.BSEL_I ;
+assign bSel_o = op == OPCODE_R   ?
+                `BSEL_R : `BSEL_I;
 
-assign brUn_o = param.BRUN_NON;
+assign brUn_o = `BRUN_NON;
 
 assign mem_o =    (op == OPCODE_I_LOAD)
                 ||(op == OPCODE_S) ?
-                param.MEM_EN :
-                param.MEM_NON;
+                `MEM_EN : `MEM_NON ;
 
 assign memW_o = op == OPCODE_S ?
-                param.MEMW_EN :
-                param.MEMW_NON;
+                `MEMW_EN : `MEMW_NON;
 
 // wbSel_o
 always @(*) begin
     case (op)
-        OPCODE_R     : wbSel_o = param.WBSEL_ALU;
-        OPCODE_I_ALU : wbSel_o = param.WBSEL_ALU;
-        OPCODE_I_LOAD: wbSel_o = param.WBSEL_MEM;
-        OPCODE_I_JALR: wbSel_o = param.WBSEL_PC4;
-        OPCODE_U     : wbSel_o = param.WBSEL_ALU;
-        OPCODE_UJ    : wbSel_o = param.WBSEL_PC4;
-        default:       wbSel_o = param.WBSEL_NON;
+        OPCODE_R     : wbSel_o = `WBSEL_ALU;
+        OPCODE_I_ALU : wbSel_o = `WBSEL_ALU;
+        OPCODE_I_LOAD: wbSel_o = `WBSEL_MEM;
+        OPCODE_I_JALR: wbSel_o = `WBSEL_PC4;
+        OPCODE_U     : wbSel_o = `WBSEL_ALU;
+        OPCODE_UJ    : wbSel_o = `WBSEL_PC4;
+        default:       wbSel_o = `WBSEL_NON;
     endcase
 end
 
 // immSel_o
 always @(*) begin
     case (op)
-        OPCODE_R     : immSel_o =   param.IMMSEL_R ;
+        OPCODE_R     : immSel_o =   `IMMSEL_R ;
         OPCODE_I_ALU : immSel_o =   (funct3 == FUNCT3_SLL) || (funct3 == FUNCT3_SR_) ?
-                                    param.IMMSEL_IS : param.IMMSEL_I;
-        OPCODE_I_LOAD: immSel_o =   param.IMMSEL_I ;
-        OPCODE_I_JALR: immSel_o =   param.IMMSEL_I ;
-        OPCODE_S     : immSel_o =   param.IMMSEL_S ;
-        OPCODE_SB    : immSel_o =   param.IMMSEL_SB;
-        OPCODE_U     : immSel_o =   param.IMMSEL_U ;
-        OPCODE_UJ    : immSel_o =   param.IMMSEL_UJ;
-        default:       immSel_o =   param.IMMSEL_R ;
+                                    `IMMSEL_IS : `IMMSEL_I;
+        OPCODE_I_LOAD: immSel_o =   `IMMSEL_I ;
+        OPCODE_I_JALR: immSel_o =   `IMMSEL_I ;
+        OPCODE_S     : immSel_o =   `IMMSEL_S ;
+        OPCODE_SB    : immSel_o =   `IMMSEL_SB;
+        OPCODE_U     : immSel_o =   `IMMSEL_U ;
+        OPCODE_UJ    : immSel_o =   `IMMSEL_UJ;
+        default:       immSel_o =   `IMMSEL_R ;
     endcase
 end
 
@@ -111,19 +105,18 @@ end
 always @(*) begin
     if (op == OPCODE_I_ALU || op == OPCODE_R) begin
         case (funct3)
-            FUNCT3_AS_: aluSel_o =  funct3 == FUNCT7_ADD ?
-                                    param.ALUSEL_ADD : param.ALUSEL_SUB;
-            FUNCT3_AND: aluSel_o =  param.ALUSEL_AND;
-            FUNCT3_OR : aluSel_o =  param.ALUSEL_OR ;
-            FUNCT3_XOR: aluSel_o =  param.ALUSEL_XOR;
-            FUNCT3_SLL: aluSel_o =  param.ALUSEL_SLL;
-            FUNCT3_SR_: aluSel_o =  funct3 == FUNCT7_SRL ?
-                                    param.ALUSEL_SRL : param.ALUSEL_SRA;
+            FUNCT3_AND: aluSel_o = `ALUSEL_AND;
+            FUNCT3_OR : aluSel_o = `ALUSEL_OR ;
+            FUNCT3_XOR: aluSel_o = `ALUSEL_XOR;
+            FUNCT3_SLL: aluSel_o = `ALUSEL_SLL;
+            FUNCT3_AS_: aluSel_o = (funct7 == FUNCT7_SUB) && (op == OPCODE_R) ?
+                                    `ALUSEL_SUB : `ALUSEL_ADD;
+            FUNCT3_SR_: aluSel_o = funct7 == FUNCT7_SRL ? `ALUSEL_SRL : `ALUSEL_SRA;
         endcase
     end else if (op == OPCODE_U) begin
-        aluSel_o = param.ALUSEL_LUI;
+        aluSel_o = `ALUSEL_LUI;
     end else begin
-        aluSel_o = param.ALUSEL_ADD;
+        aluSel_o = `ALUSEL_ADD;
     end
 end
 
@@ -131,13 +124,13 @@ end
 always @(*) begin
     if (op == OPCODE_SB) begin
         case (funct3)
-            FUNCT3_BEQ: brSel_o = param.BRSEL_BEQ;
-            FUNCT3_BNE: brSel_o = param.BRSEL_BNE;
-            FUNCT3_BLT: brSel_o = param.BRSEL_BLT;
-            FUNCT3_BGE: brSel_o = param.BRSEL_BGE;
+            FUNCT3_BEQ: brSel_o = `BRSEL_BEQ;
+            FUNCT3_BNE: brSel_o = `BRSEL_BNE;
+            FUNCT3_BLT: brSel_o = `BRSEL_BLT;
+            FUNCT3_BGE: brSel_o = `BRSEL_BGE;
         endcase
     end else begin
-        brSel_o = param.BRSEL_NON;
+        brSel_o = `BRSEL_NON;
     end
 end
 

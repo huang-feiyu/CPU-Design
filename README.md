@@ -8,7 +8,11 @@
 
 ## Prepare
 
-<details><summary>风格简介</summary>1. 为了看得清晰, 控制信号使用驼峰命名法</details>
+风格简介:<br/>
+1\. 为了看得清晰, 控制信号使用驼峰命名法<br/>
+2\. 其他遵循 [Verilog 代码规范](https://hitsz-cslab.gitee.io/cpu/codingstyle/)
+
+---
 
 > [Sheet.xlsx](Datapath_Control_Sheet.xlsx): 数据通路表 与 控制信号取值表
 
@@ -19,11 +23,11 @@
 
 可以根据 [SoC.circ](./lab1/RISCV-SoC.circ) 做出类似的 CPU.(?)
 
-<details><img src="https://user-images.githubusercontent.com/70138429/175284762-139a6230-bb9d-4edd-a695-b8c4e9da8340.png" alt="datapath"><br/><img src="https://user-images.githubusercontent.com/70138429/175284806-0f3376d0-163e-4c55-8ca6-7eb1608380ce.png" alt="control"></details>
+<details><summary>Excel Sheet</summary><img src="https://user-images.githubusercontent.com/70138429/175284762-139a6230-bb9d-4edd-a695-b8c4e9da8340.png" alt="datapath"><br/><img src="https://user-images.githubusercontent.com/70138429/175284806-0f3376d0-163e-4c55-8ca6-7eb1608380ce.png" alt="control"></details>
 
 ---
 
-> 零碎的实现笔记.
+> 零碎的 Sheet 实现笔记.
 
 * 取值单元
     * PC
@@ -42,11 +46,11 @@
     * `lw`: 存入时需要符号扩展, `R[rd]={32'bM[](31),M[R[rs1]+imm](31:0)}`
     * 一般来说, `1b'1` 代表**使能**
 
-### lab1
+## lab1
 
 > [lab1](./lab1): RISC-V Assembly
 
-#### 1. 简单的 Logisim 操作使用
+### 1. 简单的 Logisim 操作使用
 
 外设与 I/O 接口:
 * 数码管: `0xFFFF_F000`
@@ -56,7 +60,7 @@
 * SW: n -> LED: n (各位置相对应)
 * SW: xxxx -> LED: xxxx (二进制数据 -> 十进制数据)
 
-#### 2. 简易计算器实现
+### 2. 简易计算器实现
 
 > 原码输入
 
@@ -97,14 +101,14 @@
 
 **调试了一万年**...没想到这么简单.
 
-![24 条指令](https://hitsz-cslab.gitee.io/cpu/lab1/assets/t2-1.png)
+<details><summary>24 instructions</summary><img src="https://hitsz-cslab.gitee.io/cpu/lab1/assets/t2-1.png" alt="instructions"></details>
 
 ## lab2
 
 > 单周期 CPU 设计
 
 总体上, 需要如下模块:
-* top module:<br/>`miniRV.v` 实例化、连接各部件
+* top module:<br/>`mini_rv.v` 实例化、连接各部件
 * clock:<br/>`cpuclk.v` 系统时钟(25MHz)
 * memory:<br/>`prgrom.v` 指令存储器(64KB)<br/>`dmem.v` 数据存储器(64KB)
 * control: `control.v` defined in [control](#control)
@@ -114,7 +118,7 @@
 * MEM: defined in [lab2-2](#lab2-2)
 * WB: defined in [lab2-2](#lab2-2)
 
-<details><summary>Hand Painted Datapath</summary><img src="https://user-images.githubusercontent.com/70138429/175853036-c63c7e62-39e5-4656-859e-8fb768e55f46.png" alt="datapath"></details>
+<details><summary>Hand Painted Datapath</summary><img src="https://user-images.githubusercontent.com/70138429/175945950-bf6abb9e-af5c-40ee-988c-a3656399bca0.png" alt="datapath"><br/><img src="https://user-images.githubusercontent.com/70138429/175945993-c1a4e1bb-cb4b-4035-8172-1be98896cde1.png" alt="ALU"></details>
 
 ### control
 
@@ -143,3 +147,114 @@
     * `comp`: COMP(Combinatorial logic)
 * MEM
 * WB: defined before, in `reg_file.v`
+
+### lab2-3
+
+> [lab2](./lab2): 单周期 CPU 设计(Control, Simulation)
+
+在本模块将会把各个 Module 组合起来, 组成一个 CPU 进行仿真测试.
+
+* `mini_rv.v`: 将各个模块实例化<br/>在实现本模块之前, 需要先将 `dram.xci` 用 `data_ram.v` 封装起来 (虽然没有必要, 我还是将 `prgrom.xci` 也用 `inst_rom.v` 封装起来).
+
+经过简单的仿真测试后, 将会进行 [Trace 测试](https://hitsz-cslab.gitee.io/cpu/trace/trace/).
+
+---
+
+仿真测试:
+
+0. 宏定义出错
+
+Vivado 无法识别定义的宏.
+
+```error
+'BRANCH_IMM' is not declared [.../next_pc.v:18]
+```
+
+将其包含到文件中、将其内容复制到文件中, 都没有效果. ~~也许不能够在 `case` 中用宏?~~
+
+解决方案: use "`MACRO_NAME" instead.
+
+1. I 型指令
+
+> [I-type](./test/riscv/I_type_insts.asm)
+
+<strong>*</strong> `ASel==1` => bug01
+
+```diff
+assign aSel_o =   (op == OPCODE_SB)
+                ||(op == OPCODE_U )
+                ||(op == OPCODE_UJ) ?
+<               `ASEL_R : `ASEL_PC  ;
+---
+>               `ASEL_PC : `ASEL_R  ;
+```
+
+2. R 型指令
+
+> [R-type](./test/riscv/R_type_insts.asm)
+
+<strong>*</strong> `sub` & `ALUSel=0` => bug02
+
+```diff
+case (funct3)
+< FUNCT3_AS_: aluSel_o = funct3 == FUNCT7_ADD ? `ALUSEL_ADD : `ALUSEL_SUB;
+< FUNCT3_SR_: aluSel_o = funct3 == FUNCT7_SRL ? `ALUSEL_SRL : `ALUSEL_SRA;
+---
+> FUNCT3_AS_: aluSel_o = funct7 == FUNCT7_ADD ? `ALUSEL_ADD : `ALUSEL_SUB;
+> FUNCT3_SR_: aluSel_o = funct7 == FUNCT7_SRL ? `ALUSEL_SRL : `ALUSEL_SRA;
+endcase
+```
+
+<strong>*</strong> `addi` & `ALUSel=1` => bug03
+
+```diff
+case (funct3)
+< FUNCT3_AS_: aluSel_o = funct7 == FUNCT7_ADD ? `ALUSEL_ADD : `ALUSEL_SUB;
+---
+> FUNCT3_AS_: aluSel_o = (funct7 == FUNCT7_SUB) && (op == OPCODE_R) ? `ALUSEL_SUB : `ALUSEL_ADD;
+FUNCT3_SR_: aluSel_o = funct7 == FUNCT7_SRL ? `ALUSEL_SRL : `ALUSEL_SRA;
+endcase
+```
+
+3. MEM 访存指令
+
+> [MEM](./test/riscv/MEM_insts.asm)
+
+It is fine.
+
+4. U 型指令
+
+> [U-type](./test/riscv/U_type_insts.asm)
+
+It is fine.
+
+5. J 型指令
+
+> [J-type](./test/riscv/J_type_insts.asm)
+
+<strong>*</strong> `branch==1` => bug04
+
+```verilog
+// exe_top
+always @(*) begin
+    case(brSel_i)
+    // 代码中仅考虑了比较器, 没有考虑分支器, 将 PCSel 加在 default 即可.
+    endcase
+end
+```
+
+6. B 型指令
+
+> [B-type](./test/riscv/B_type_insts.asm)
+
+```assembly
+jal loop # jal x1, loop
+```
+
+It is fine.
+
+7. 混合指令
+
+> [Mixin](./test/riscv/Mixin_insts.asm): 魔改后的 lab1
+
+得到结果 -620<s>, 与预期 -20 不同.</s>, 正确.
