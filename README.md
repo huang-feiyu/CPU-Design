@@ -8,7 +8,11 @@
 
 ## Prepare
 
-<details><summary>风格简介</summary>1. 为了看得清晰, 控制信号使用驼峰命名法</details>
+风格简介:<br/>
+1\. 为了看得清晰, 控制信号使用驼峰命名法<br/>
+2\. 其他遵循 [Verilog 代码规范](https://hitsz-cslab.gitee.io/cpu/codingstyle/)
+
+---
 
 > [Sheet.xlsx](Datapath_Control_Sheet.xlsx): 数据通路表 与 控制信号取值表
 
@@ -19,11 +23,11 @@
 
 可以根据 [SoC.circ](./lab1/RISCV-SoC.circ) 做出类似的 CPU.(?)
 
-<details><img src="https://user-images.githubusercontent.com/70138429/175284762-139a6230-bb9d-4edd-a695-b8c4e9da8340.png" alt="datapath"><br/><img src="https://user-images.githubusercontent.com/70138429/175284806-0f3376d0-163e-4c55-8ca6-7eb1608380ce.png" alt="control"></details>
+<details><summary>Excel Sheet</summary><img src="https://user-images.githubusercontent.com/70138429/175284762-139a6230-bb9d-4edd-a695-b8c4e9da8340.png" alt="datapath"><br/><img src="https://user-images.githubusercontent.com/70138429/175284806-0f3376d0-163e-4c55-8ca6-7eb1608380ce.png" alt="control"></details>
 
 ---
 
-> 零碎的实现笔记.
+> 零碎的 Sheet 实现笔记.
 
 * 取值单元
     * PC
@@ -42,11 +46,11 @@
     * `lw`: 存入时需要符号扩展, `R[rd]={32'bM[](31),M[R[rs1]+imm](31:0)}`
     * 一般来说, `1b'1` 代表**使能**
 
-### lab1
+## lab1
 
 > [lab1](./lab1): RISC-V Assembly
 
-#### 1. 简单的 Logisim 操作使用
+### 1. 简单的 Logisim 操作使用
 
 外设与 I/O 接口:
 * 数码管: `0xFFFF_F000`
@@ -56,7 +60,7 @@
 * SW: n -> LED: n (各位置相对应)
 * SW: xxxx -> LED: xxxx (二进制数据 -> 十进制数据)
 
-#### 2. 简易计算器实现
+### 2. 简易计算器实现
 
 > 原码输入
 
@@ -97,7 +101,7 @@
 
 **调试了一万年**...没想到这么简单.
 
-![24 条指令](https://hitsz-cslab.gitee.io/cpu/lab1/assets/t2-1.png)
+<details><summary>24 instructions</summary><img src="https://hitsz-cslab.gitee.io/cpu/lab1/assets/t2-1.png" alt="instructions"></details>
 
 ## lab2
 
