@@ -258,3 +258,57 @@ It is fine.
 > [Mixin](./test/riscv/Mixin_insts.asm): 魔改后的 lab1
 
 得到结果 -620<s>, 与预期 -20 不同.</s>, 正确.
+
+---
+
+Trace 测试:
+
+0. 创建 `top.v`
+
+在差分测试时, 各模块都需要在顶部声明 `include "param.v"
+
+1. 第一次差分测试
+
+结果如下:
+
+```
+Passed Tests:
+add, addi, and, andi, beq, bne, jal, jalr, lui, lw, or, ori, simple, slli, srai, srli, sub, sw, xor, xori
+Failed Tests:
+auipc, bge, bgeu, blt, bltu, lb, lbu, lh, lhu, sb, sh, sll, slt, slti, sltiu, sltu, sra, srl
+```
+
+除去非必要指令, 测试失败的指令有: `bge`, `blt`, `sll`, `srl`, `sra`.
+
+<strong>*</strong> 立即数移位操作正确, 寄存器移位错误 => bug05
+
+```diff
+< `ALUSEL_SRL: aluC_o = a >> b;
+---
+> wire [4:0] shamt = b[4:0];
+> `ALUSEL_SRL: aluC_o = a >> shamt;
+```
+
+2. 第二次差分测试
+
+结果如下:
+
+```
+Passed Tests:
+add, addi, and, andi, beq, bne, jal, jalr, lui, lw, or, ori, simple, sll, slli, sra, srai, srl, srli, sub, sw, xor, xori
+Failed Tests:
+auipc, bge, bgeu, blt, bltu, lb, lbu, lh, lhu, sb, sh, slt, slti, sltiu, sltu
+```
+
+除去非必要指令, 测试失败的指令有: `bge`, `blt`.
+
+```diff
+case (a_b_sign_eq)
+    0: brLT_o = rd1_i[30:0] < rd2_i[30:0] ? `BRLT_T : `BRLT_F;
+< 1: brLT_o = rd1_i[31] == 0 ? `BRLT_T : `BRLT_F;
+---
+> 1: brLT_o = rd1_i[31] == 1 ? `BRLT_T : `BRLT_F;
+endcase
+```
+
+至此, trace 测试全部通过.

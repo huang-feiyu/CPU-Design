@@ -19,6 +19,7 @@ wire [31:0] inst ;
 // signals ID & WB generates
 wire [31:0] rd1;
 wire [31:0] rd2;
+wire [31:0] wd ;
 wire [31:0] ext;
 
 // signals EXE generates
@@ -76,7 +77,8 @@ reg_file CPU_RF (
     .mem_rd_i (mem_rd)     ,
     .pc4_i    (pc4)        ,
     .rd1_o    (rd1)        ,
-    .rd2_o    (rd2)
+    .rd2_o    (rd2)        ,
+    .wd_o     (wd)
 );
 
 imm_gen CPU_SEXT (
