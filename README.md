@@ -259,7 +259,7 @@ It is fine.
 
 得到结果 -620<s>, 与预期 -20 不同.</s>, 正确.
 
----
+### lab2-4
 
 Trace 测试:
 
@@ -312,3 +312,7 @@ endcase
 ```
 
 至此, trace 测试全部通过.
+
+### lab2-5
+
+创建一个新工程 [board](./board/), 并在其中创建 `top.v` —— Waiting for next course.
