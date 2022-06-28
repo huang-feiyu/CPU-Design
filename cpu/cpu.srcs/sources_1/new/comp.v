@@ -15,9 +15,9 @@ wire a_b_sign_eq;
 assign a_b_sign_eq = (rd1_i[31] ^ rd2_i[31]);
 
 always @(*) begin
-    case(a_b_sign_eq)
+    case (a_b_sign_eq)
         0: brLT_o = rd1_i[30:0] < rd2_i[30:0] ? `BRLT_T : `BRLT_F;
-        1: brLT_o = rd1_i[31] == 0 ? `BRLT_T : `BRLT_F;
+        1: brLT_o = rd1_i[31] == 1 ? `BRLT_T : `BRLT_F;
     endcase
 end
 

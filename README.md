@@ -302,4 +302,13 @@ auipc, bge, bgeu, blt, bltu, lb, lbu, lh, lhu, sb, sh, slt, slti, sltiu, sltu
 
 除去非必要指令, 测试失败的指令有: `bge`, `blt`.
 
+```diff
+case (a_b_sign_eq)
+    0: brLT_o = rd1_i[30:0] < rd2_i[30:0] ? `BRLT_T : `BRLT_F;
+< 1: brLT_o = rd1_i[31] == 0 ? `BRLT_T : `BRLT_F;
+---
+> 1: brLT_o = rd1_i[31] == 1 ? `BRLT_T : `BRLT_F;
+endcase
+```
 
+至此, trace 测试全部通过.
