@@ -302,6 +302,8 @@ auipc, bge, bgeu, blt, bltu, lb, lbu, lh, lhu, sb, sh, slt, slti, sltiu, sltu
 
 除去非必要指令, 测试失败的指令有: `bge`, `blt`.
 
+<strong>*</strong> 等于正确, 大于小于错误 => bug06
+
 ```diff
 case (a_b_sign_eq)
     0: brLT_o = rd1_i[30:0] < rd2_i[30:0] ? `BRLT_T : `BRLT_F;
