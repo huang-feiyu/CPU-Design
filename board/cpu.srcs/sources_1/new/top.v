@@ -27,24 +27,24 @@ wire [31:0] pc    ;
 wire [7 :0] led_en;
 
 mini_rv U_mini_rv(
-    .fpga_clk_i (clk)  ,
+    .fpga_clk_i (clk  ),
     .rst_n_i    (rst_n),
-    .pc         (pc)
+    .pc         (pc   )
 );
 
 led_display U_display(
-    .clk_i     (clk      ),
-    .rst_n_i   (rst_n    ),
-    .pc_i      (pc       ),
-    .led_en_o  (led_en   ),
-    .led_ca_o  (led_ca_o ),
-    .led_cb_o  (led_cb_o ),
-    .led_cc_o  (led_cc_o ),
-    .led_cd_o  (led_cd_o ),
-    .led_ce_o  (led_ce_o ),
-    .led_cf_o  (led_cf_o ),
-    .led_cg_o  (led_cg_o ),
-    .led_dp_o  (led_dp_o )
+    .clk_i     (clk     ),
+    .rst_n_i   (rst_n   ),
+    .pc_i      (pc      ),
+    .led_en_o  (led_en  ),
+    .led_ca_o  (led_ca_o),
+    .led_cb_o  (led_cb_o),
+    .led_cc_o  (led_cc_o),
+    .led_cd_o  (led_cd_o),
+    .led_ce_o  (led_ce_o),
+    .led_cf_o  (led_cf_o),
+    .led_cg_o  (led_cg_o),
+    .led_dp_o  (led_dp_o)
 );
 
 assign led0_en_o = led_en[0];

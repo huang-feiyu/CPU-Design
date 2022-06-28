@@ -1,17 +1,17 @@
 `timescale 1ns / 1ps
 
 module led_display(
-    input             clk_i    ,
-    input             rst_n_i  ,
-    input      [31:0] pc_i     ,
-    output reg [7 :0] led_en_o ,
-    output reg        led_ca_o ,
-    output reg        led_cb_o ,
-    output reg        led_cc_o ,
-    output reg        led_cd_o ,
-    output reg        led_ce_o ,
-    output reg        led_cf_o ,
-    output reg        led_cg_o ,
+    input             clk_i   ,
+    input             rst_n_i ,
+    input      [31:0] pc_i    ,
+    output reg [7 :0] led_en_o,
+    output reg        led_ca_o,
+    output reg        led_cb_o,
+    output reg        led_cc_o,
+    output reg        led_cd_o,
+    output reg        led_ce_o,
+    output reg        led_cf_o,
+    output reg        led_cg_o,
     output reg        led_dp_o
 );
 
@@ -42,15 +42,15 @@ reg [3:0] led_display;
 
 always @(*) begin
     case (led_cn_t)
-        3'h7   : led_display = pc_i[31:28];
-        3'h6   : led_display = pc_i[27:24];
-        3'h5   : led_display = pc_i[23:20];
-        3'h4   : led_display = pc_i[19:16];
-        3'h3   : led_display = pc_i[15:12];
-        3'h2   : led_display = pc_i[11:8 ];
-        3'h1   : led_display = pc_i[7 :4 ];
-        3'h0   : led_display = pc_i[3 :0 ];
-        default: led_display = 4'h0;
+        3'h000 : led_display = pc_i[3 :0 ];
+        3'h001 : led_display = pc_i[7 :4 ];
+        3'h010 : led_display = pc_i[11:8 ];
+        3'h011 : led_display = pc_i[15:12];
+        3'h100 : led_display = pc_i[19:16];
+        3'h101 : led_display = pc_i[23:20];
+        3'h110 : led_display = pc_i[27:24];
+        3'h111 : led_display = pc_i[31:28];
+        default: led_display = 4'b0000    ;
     endcase
 end
 
@@ -71,14 +71,16 @@ wire eqd = (led_display == 4'hd);
 wire eqe = (led_display == 4'he);
 wire eqf = (led_display == 4'hf);
 
-/******************
-*   LED           *
-* |--A--|         *
-* F     B         *
-* |--G--|         *
-* E     C         *
-* |--D--| . => DP *
-*******************/
+/*************
+*   LED      *
+* |--A--|    *
+* F     B    *
+* |--G--|    *
+* E     C    *
+* |--D--| .  *
+*         ↓  *
+*         DP *
+**************/
 
 wire led_ca_d = ~(eq0 | eq2 | eq3 | eq5 | eq6 | eq7 | eq8 | eq9 | eqa | eqc | eqe | eqf);
 wire led_cb_d = ~(eq0 | eq1 | eq2 | eq3 | eq4 | eq7 | eq8 | eq9 | eqa | eqd)            ;
