@@ -2,8 +2,11 @@
 
 // CPU
 module mini_rv(
-    input         fpga_clk_i,
-    input         rst_n_i   ,
+    input         fpga_clk_i  ,
+    input         rst_n_i     ,
+
+    input  [23:0] device_sw_i ,
+    output [23:0] device_led_o,
 
     output [31:0] pc
 );
@@ -105,12 +108,15 @@ exe_top CPU_EXE (
 
 // MEM
 data_ram CPU_DRAM (
-    .clk_i    (clk) ,
-    .aluC_i   (aluC),
-    .mem_i    (mem) ,
-    .memW_i   (memW),
-    .rd2_i    (rd2) ,
-    .mem_rd_o (mem_rd)
+    .clk_i    (clk)   ,
+    .aluC_i   (aluC)  ,
+    .mem_i    (mem)   ,
+    .memW_i   (memW)  ,
+    .rd2_i    (rd2)   ,
+    .mem_rd_o (mem_rd),
+
+    .device_sw  (device_sw_i),
+    .device_led (device_led_o)
 );
 
 // control

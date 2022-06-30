@@ -1,4 +1,4 @@
-// (c) Copyright 1995-2021 Xilinx, Inc. All rights reserved.
+// (c) Copyright 1995-2022 Xilinx, Inc. All rights reserved.
 // 
 // This file contains confidential and proprietary information
 // of Xilinx, Inc. and is protected under U.S. and
@@ -54,16 +54,13 @@
 // (in parentheses) to your own signal names.
 
 //----------- Begin Cut here for INSTANTIATION Template ---// INST_TAG
-dram your_instance_name (
+prgrom your_instance_name (
   .a(a),      // input wire [13 : 0] a
-  .d(d),      // input wire [31 : 0] d
-  .clk(clk),  // input wire clk
-  .we(we),    // input wire we
   .spo(spo)  // output wire [31 : 0] spo
 );
 // INST_TAG_END ------ End INSTANTIATION Template ---------
 
-// You must compile the wrapper file dram.v when simulating
-// the core, dram. When compiling the wrapper file, be sure to
+// You must compile the wrapper file prgrom.v when simulating
+// the core, prgrom. When compiling the wrapper file, be sure to
 // reference the Verilog simulation library.
 

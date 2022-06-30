@@ -317,4 +317,8 @@ endcase
 
 ### lab2-5
 
-创建一个新工程 [board](./board/), 并在其中创建 `top.v` —— Waiting for next course.
+创建一个新工程 [board](./board/), 并在其中创建 `top.v`.
+
+添加总线桥 `io_bus.v`, 连接各外设.
+
+* `led_display.v`: LED 显示

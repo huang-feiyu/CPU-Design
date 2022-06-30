@@ -1,4 +1,4 @@
-// (c) Copyright 1995-2021 Xilinx, Inc. All rights reserved.
+// (c) Copyright 1995-2022 Xilinx, Inc. All rights reserved.
 // 
 // This file contains confidential and proprietary information
 // of Xilinx, Inc. and is protected under U.S. and
@@ -46,21 +46,77 @@
 // 
 // DO NOT MODIFY THIS FILE.
 
+
 // IP VLNV: xilinx.com:ip:dist_mem_gen:8.0
 // IP Revision: 12
 
-// The following must be inserted into your Verilog file for this
-// core to be instantiated. Change the instance name and port connections
-// (in parentheses) to your own signal names.
+`timescale 1ns/1ps
 
-//----------- Begin Cut here for INSTANTIATION Template ---// INST_TAG
-prgrom your_instance_name (
-  .a(a),      // input wire [13 : 0] a
-  .spo(spo)  // output wire [31 : 0] spo
+(* DowngradeIPIdentifiedWarnings = "yes" *)
+module dram (
+  a,
+  d,
+  clk,
+  we,
+  spo
 );
-// INST_TAG_END ------ End INSTANTIATION Template ---------
 
-// You must compile the wrapper file prgrom.v when simulating
-// the core, prgrom. When compiling the wrapper file, be sure to
-// reference the Verilog simulation library.
+input wire [13 : 0] a;
+input wire [31 : 0] d;
+input wire clk;
+input wire we;
+output wire [31 : 0] spo;
 
+  dist_mem_gen_v8_0_12 #(
+    .C_FAMILY("artix7"),
+    .C_ADDR_WIDTH(14),
+    .C_DEFAULT_DATA("0"),
+    .C_DEPTH(16384),
+    .C_HAS_CLK(1),
+    .C_HAS_D(1),
+    .C_HAS_DPO(0),
+    .C_HAS_DPRA(0),
+    .C_HAS_I_CE(0),
+    .C_HAS_QDPO(0),
+    .C_HAS_QDPO_CE(0),
+    .C_HAS_QDPO_CLK(0),
+    .C_HAS_QDPO_RST(0),
+    .C_HAS_QDPO_SRST(0),
+    .C_HAS_QSPO(0),
+    .C_HAS_QSPO_CE(0),
+    .C_HAS_QSPO_RST(0),
+    .C_HAS_QSPO_SRST(0),
+    .C_HAS_SPO(1),
+    .C_HAS_WE(1),
+    .C_MEM_INIT_FILE("no_coe_file_loaded"),
+    .C_ELABORATION_DIR("./"),
+    .C_MEM_TYPE(1),
+    .C_PIPELINE_STAGES(0),
+    .C_QCE_JOINED(0),
+    .C_QUALIFY_WE(0),
+    .C_READ_MIF(0),
+    .C_REG_A_D_INPUTS(0),
+    .C_REG_DPRA_INPUT(0),
+    .C_SYNC_ENABLE(1),
+    .C_WIDTH(32),
+    .C_PARSER_TYPE(1)
+  ) inst (
+    .a(a),
+    .d(d),
+    .dpra(14'B0),
+    .clk(clk),
+    .we(we),
+    .i_ce(1'D1),
+    .qspo_ce(1'D1),
+    .qdpo_ce(1'D1),
+    .qdpo_clk(1'D0),
+    .qspo_rst(1'D0),
+    .qdpo_rst(1'D0),
+    .qspo_srst(1'D0),
+    .qdpo_srst(1'D0),
+    .spo(spo),
+    .dpo(),
+    .qspo(),
+    .qdpo()
+  );
+endmodule

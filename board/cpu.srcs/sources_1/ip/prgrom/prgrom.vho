@@ -1,4 +1,4 @@
--- (c) Copyright 1995-2021 Xilinx, Inc. All rights reserved.
+-- (c) Copyright 1995-2022 Xilinx, Inc. All rights reserved.
 -- 
 -- This file contains confidential and proprietary information
 -- of Xilinx, Inc. and is protected under U.S. and
@@ -52,12 +52,9 @@
 -- The following code must appear in the VHDL architecture header.
 
 ------------- Begin Cut here for COMPONENT Declaration ------ COMP_TAG
-COMPONENT dram
+COMPONENT prgrom
   PORT (
     a : IN STD_LOGIC_VECTOR(13 DOWNTO 0);
-    d : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-    clk : IN STD_LOGIC;
-    we : IN STD_LOGIC;
     spo : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
   );
 END COMPONENT;
@@ -67,17 +64,14 @@ END COMPONENT;
 -- body. Substitute your own instance name and net names.
 
 ------------- Begin Cut here for INSTANTIATION Template ----- INST_TAG
-your_instance_name : dram
+your_instance_name : prgrom
   PORT MAP (
     a => a,
-    d => d,
-    clk => clk,
-    we => we,
     spo => spo
   );
 -- INST_TAG_END ------ End INSTANTIATION Template ---------
 
--- You must compile the wrapper file dram.vhd when simulating
--- the core, dram. When compiling the wrapper file, be sure to
+-- You must compile the wrapper file prgrom.vhd when simulating
+-- the core, prgrom. When compiling the wrapper file, be sure to
 -- reference the VHDL simulation library.
 
