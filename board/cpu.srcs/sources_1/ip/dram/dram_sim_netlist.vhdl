@@ -1,10 +1,9 @@
 -- Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
 -- Tool Version: Vivado v.2018.3 (win64) Build 2405991 Thu Dec  6 23:38:27 MST 2018
--- Date        : Thu Jun 23 20:41:35 2022
+-- Date        : Thu Jun 23 20:41:37 2022
 -- Host        : PC-Huang running 64-bit major release  (build 9200)
--- Command     : write_vhdl -force -mode funcsim -rename_top dram -prefix
---               dram_ dram_sim_netlist.vhdl
+-- Command     : write_vhdl -force -mode funcsim p:/Project/iverilog/cpu/cpu.srcs/sources_1/ip/dram/dram_sim_netlist.vhdl
 -- Design      : dram
 -- Purpose     : This VHDL netlist is a functional simulation representation of the design and should not be modified or
 --               synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -22,6 +21,8 @@ entity dram_spram is
     d : in STD_LOGIC_VECTOR ( 31 downto 0 );
     we : in STD_LOGIC
   );
+  attribute ORIG_REF_NAME : string;
+  attribute ORIG_REF_NAME of dram_spram : entity is "spram";
 end dram_spram;
 
 architecture STRUCTURE of dram_spram is
@@ -47000,6 +47001,8 @@ entity dram_dist_mem_gen_v8_0_12_synth is
     d : in STD_LOGIC_VECTOR ( 31 downto 0 );
     we : in STD_LOGIC
   );
+  attribute ORIG_REF_NAME : string;
+  attribute ORIG_REF_NAME of dram_dist_mem_gen_v8_0_12_synth : entity is "dist_mem_gen_v8_0_12_synth";
 end dram_dist_mem_gen_v8_0_12_synth;
 
 architecture STRUCTURE of dram_dist_mem_gen_v8_0_12_synth is
@@ -47101,6 +47104,8 @@ entity dram_dist_mem_gen_v8_0_12 is
   attribute C_SYNC_ENABLE of dram_dist_mem_gen_v8_0_12 : entity is 1;
   attribute C_WIDTH : integer;
   attribute C_WIDTH of dram_dist_mem_gen_v8_0_12 : entity is 32;
+  attribute ORIG_REF_NAME : string;
+  attribute ORIG_REF_NAME of dram_dist_mem_gen_v8_0_12 : entity is "dist_mem_gen_v8_0_12";
 end dram_dist_mem_gen_v8_0_12;
 
 architecture STRUCTURE of dram_dist_mem_gen_v8_0_12 is

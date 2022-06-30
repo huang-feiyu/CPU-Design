@@ -15,12 +15,16 @@ module data_ram(
 
 wire we;
 
-assign we = (aluC_i == 32'hFFFFF060) || (aluC_i == 32'hFFFFF062) ? 1'b0 : memW_i;
+assign we = (aluC_i == 32'hFFFFF060) || (aluC_i == 32'hFFFFF062) ?
+            1'b0 : memW_i;
 
 always @(*) begin
-    if      (aluC_i == 32'hFFFFF060 && memW_i) device_led = {device_led[23:16], rd2_i[15:0]};
-    else if (aluC_i == 32'hFFFFF062 && memW_i) device_led = {rd2_i[7:0], device_led[15:0]}  ;
-    else                                       device_led = device_led;
+    if (aluC_i == 32'hFFFFF060 && memW_i)
+        device_led = {device_led[23:16], rd2_i[15:0]};
+    else if (aluC_i == 32'hFFFFF062 && memW_i)
+        device_led = {rd2_i[7:0], device_led[15:0]}  ;
+    else
+        device_led = device_led;
 end
 
 wire [31:0] tmp_rd; // data read from dram ip core
@@ -31,10 +35,10 @@ always @(*) begin
 end
 
 dram U_dram (
-    .clk (clk_i)      ,
-    .a   (waddr[15:2]),
-    .spo (tmp_rd)     ,
-    .we  (we)         ,
+    .clk (clk_i)       ,
+    .a   (aluC_i[15:2]),
+    .spo (tmp_rd)      ,
+    .we  (we)          ,
     .d   (rd2_i)
 );
 

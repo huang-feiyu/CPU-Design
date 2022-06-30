@@ -1,6 +1,6 @@
 // for board
 module top(
-    input  wire clk_i  ,
+    input  wire clk    ,
     input  wire rst_i  ,
     output wire led0_en,
     output wire led1_en,
@@ -24,7 +24,6 @@ module top(
 
 );
 
-wire clk   =  clk_i;
 wire rst_n = ~rst_i;
 
 wire [31:0] pc    ;
@@ -34,7 +33,9 @@ mini_rv U_mini_rv(
     .fpga_clk_i (clk  ),
     .rst_n_i    (rst_n),
     .pc         (pc   ),
-    .
+
+    .device_sw_i  (device_sw),
+    .device_led_o (device_led)
 );
 
 led_display U_display(

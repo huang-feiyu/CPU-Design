@@ -1,10 +1,9 @@
 // Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2018.3 (win64) Build 2405991 Thu Dec  6 23:38:27 MST 2018
-// Date        : Thu Jun 23 20:41:35 2022
+// Date        : Thu Jun 23 20:41:37 2022
 // Host        : PC-Huang running 64-bit major release  (build 9200)
-// Command     : write_verilog -force -mode synth_stub -rename_top dram -prefix
-//               dram_ dram_stub.v
+// Command     : write_verilog -force -mode synth_stub p:/Project/iverilog/cpu/cpu.srcs/sources_1/ip/dram/dram_stub.v
 // Design      : dram
 // Purpose     : Stub declaration of top-level module interface
 // Device      : xc7a100tfgg484-1
