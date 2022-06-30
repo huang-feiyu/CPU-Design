@@ -5,10 +5,11 @@ module mini_rv(
     input         fpga_clk_i  ,
     input         rst_n_i     ,
 
-    input  [23:0] device_sw_i ,
-    output [23:0] device_led_o,
+    output [7: 0] led_en_o    ,
+    output [7: 0] led_dt_o    ,
 
-    output [31:0] pc
+    input  [23:0] device_sw_i ,
+    output [23:0] device_led_o
 );
 
 wire clk;
@@ -16,6 +17,7 @@ wire clk;
 // signals IF generates
 wire        pc_en;
 wire [31:0] pc4  ;
+wire [31:0] pc   ;
 wire [31:0] npc  ;
 wire [31:0] inst ;
 
@@ -42,97 +44,100 @@ wire [3:0] aluSel;
 // instantiate in a specific order
 cpuclk CPU_CLK (
     .clk_in1  (fpga_clk_i),
-    .clk_out1 (clk)
+    .clk_out1 (clk       )
 );
 
 // IF
 pc_reg CPU_PC (
-    .clk_i   (clk)    ,
+    .clk_i   (clk    ),
     .rst_n_i (rst_n_i),
-    .en      (pc_en)  ,
-    .npc_i   (npc)    ,
-    .pc_o    (pc)
+    .en      (pc_en  ),
+    .npc_i   (npc    ),
+    .pc_o    (pc     )
 );
 
 inst_rom CPU_IROM (
-    .pc_i   (pc)  ,
+    .pc_i   (pc  ),
     .inst_o (inst)
 );
 
 next_pc CPU_NPC (
-    .pc_i     (pc)    ,
-    .aluC_i   (aluC)  ,
+    .pc_i     (pc    ),
+    .aluC_i   (aluC  ),
     .branch_i (branch),
-    .npc_o    (npc)   ,
-    .pc4_o    (pc4)
+    .npc_o    (npc   ),
+    .pc4_o    (pc4   )
 );
 
 // ID & WB
 reg_file CPU_RF (
-    .clk_i    (clk)        ,
-    .rst_n_i  (rst_n_i)    ,
+    .clk_i    (clk        ),
+    .rst_n_i  (rst_n_i    ),
     .rs1_i    (inst[19:15]),
     .rs2_i    (inst[24:20]),
     .wr_i     (inst[11:7 ]),
-    .regWEn_i (regWEn)     ,
-    .wbSel_i  (wbSel)      ,
-    .aluC_i   (aluC)       ,
-    .mem_rd_i (mem_rd)     ,
-    .pc4_i    (pc4)        ,
-    .rd1_o    (rd1)        ,
-    .rd2_o    (rd2)        ,
-    .wd_o     (wd)
+    .regWEn_i (regWEn     ),
+    .wbSel_i  (wbSel      ),
+    .aluC_i   (aluC       ),
+    .mem_rd_i (mem_rd     ),
+    .pc4_i    (pc4        ),
+    .rd1_o    (rd1        ),
+    .rd2_o    (rd2        ),
+    .wd_o     (wd         )
 );
 
 imm_gen CPU_SEXT (
-    .immSel_i (immSel)    ,
+    .immSel_i (immSel    ),
     .inst_i   (inst[31:7]),
-    .ext_o    (ext)
+    .ext_o    (ext       )
 );
 
 // EXE
 exe_top CPU_EXE (
-    .rd1_i    (rd1)   ,
-    .rd2_i    (rd2)   ,
-    .pc_i     (pc)    ,
-    .ext_i    (ext)   ,
-    .aSel_i   (aSel)  ,
-    .bSel_i   (bSel)  ,
+    .rd1_i    (rd1   ),
+    .rd2_i    (rd2   ),
+    .pc_i     (pc    ),
+    .ext_i    (ext   ),
+    .aSel_i   (aSel  ),
+    .bSel_i   (bSel  ),
     .aluSel_i (aluSel),
-    .brSel_i  (brSel) ,
-    .pcSel_i  (pcSel) ,
-    .brUn_i   (brUn)  ,
-    .aluC_o   (aluC)  ,
+    .brSel_i  (brSel ),
+    .pcSel_i  (pcSel ),
+    .brUn_i   (brUn  ),
+    .aluC_o   (aluC  ),
     .branch_o (branch)
 );
 
 // MEM
 data_ram CPU_DRAM (
-    .clk_i    (clk)   ,
-    .aluC_i   (aluC)  ,
-    .mem_i    (mem)   ,
-    .memW_i   (memW)  ,
-    .rd2_i    (rd2)   ,
+    .clk_i    (clk   ),
+    .aluC_i   (aluC  ),
+    .mem_i    (mem   ),
+    .memW_i   (memW  ),
+    .rd2_i    (rd2   ),
     .mem_rd_o (mem_rd),
 
-    .device_sw  (device_sw_i),
+    .led_en (led_en_o),
+    .led_dt (led_dt_o),
+
+    .device_sw  (device_sw_i ),
     .device_led (device_led_o)
 );
 
 // control
 control CPU_CTRL (
-    .inst_i   (inst)  ,
-    .pcSel_o  (pcSel) ,
+    .inst_i   (inst  ),
+    .pcSel_o  (pcSel ),
     .regWEn_o (regWEn),
-    .wbSel_o  (wbSel) ,
+    .wbSel_o  (wbSel ),
     .immSel_o (immSel),
     .aluSel_o (aluSel),
-    .aSel_o   (aSel)  ,
-    .bSel_o   (bSel)  ,
-    .brUn_o   (brUn)  ,
-    .brSel_o  (brSel) ,
-    .mem_o    (mem)   ,
-    .memW_o   (memW)
+    .aSel_o   (aSel  ),
+    .bSel_o   (bSel  ),
+    .brUn_o   (brUn  ),
+    .brSel_o  (brSel ),
+    .mem_o    (mem   ),
+    .memW_o   (memW  )
 );
 
 endmodule

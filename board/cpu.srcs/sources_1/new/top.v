@@ -1,23 +1,24 @@
 // for board
 module top(
-    input  wire clk    ,
-    input  wire rst_i  ,
-    output wire led0_en,
-    output wire led1_en,
-    output wire led2_en,
-    output wire led3_en,
-    output wire led4_en,
-    output wire led5_en,
-    output wire led6_en,
-    output wire led7_en,
-    output wire led_ca ,
-    output wire led_cb ,
-    output wire led_cc ,
-    output wire led_cd ,
-    output wire led_ce ,
-    output wire led_cf ,
-    output wire led_cg ,
-    output wire led_dp ,
+    input  clk    ,
+    input  rst_i  ,
+
+    output led0_en,
+    output led1_en,
+    output led2_en,
+    output led3_en,
+    output led4_en,
+    output led5_en,
+    output led6_en,
+    output led7_en,
+    output led_ca ,
+    output led_cb ,
+    output led_cc ,
+    output led_cd ,
+    output led_ce ,
+    output led_cf ,
+    output led_cg ,
+    output led_dp ,
 
     input  [23:0] device_sw,
     output [23:0] device_led
@@ -26,31 +27,18 @@ module top(
 
 wire rst_n = ~rst_i;
 
-wire [31:0] pc    ;
-wire [7 :0] led_en;
+wire [7:0] led_en;
+wire [7:0] led_dt;
 
 mini_rv U_mini_rv(
-    .fpga_clk_i (clk  ),
-    .rst_n_i    (rst_n),
-    .pc         (pc   ),
+    .fpga_clk_i (clk   ),
+    .rst_n_i    (rst_n ),
 
-    .device_sw_i  (device_sw),
+    .led_en_o   (led_en),
+    .led_dt_o   (led_dt),
+
+    .device_sw_i  (device_sw ),
     .device_led_o (device_led)
-);
-
-led_display U_display(
-    .clk_i     (clk   ),
-    .rst_n_i   (rst_n ),
-    .pc_i      (pc    ),
-    .led_en_o  (led_en),
-    .led_ca_o  (led_ca),
-    .led_cb_o  (led_cb),
-    .led_cc_o  (led_cc),
-    .led_cd_o  (led_cd),
-    .led_ce_o  (led_ce),
-    .led_cf_o  (led_cf),
-    .led_cg_o  (led_cg),
-    .led_dp_o  (led_dp)
 );
 
 assign led0_en = led_en[0];
@@ -61,5 +49,14 @@ assign led4_en = led_en[4];
 assign led5_en = led_en[5];
 assign led6_en = led_en[6];
 assign led7_en = led_en[7];
+
+assign led_ca  = led_dt[0];
+assign led_cb  = led_dt[1];
+assign led_cc  = led_dt[2];
+assign led_cd  = led_dt[3];
+assign led_ce  = led_dt[4];
+assign led_cf  = led_dt[5];
+assign led_cg  = led_dt[6];
+assign led_dp  = led_dt[7];
 
 endmodule

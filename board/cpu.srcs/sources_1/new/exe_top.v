@@ -22,19 +22,19 @@ wire brEQ_t; // t means temp
 wire brLT_t;
 
 alu exe_alu (
-    .rd1_i    (rd1_i)   ,
-    .rd2_i    (rd2_i)   ,
-    .pc_i     (pc_i)    ,
-    .ext_i    (ext_i)   ,
-    .aSel_i   (aSel_i)  ,
-    .bSel_i   (bSel_i)  ,
+    .rd1_i    (rd1_i   ),
+    .rd2_i    (rd2_i   ),
+    .pc_i     (pc_i    ),
+    .ext_i    (ext_i   ),
+    .aSel_i   (aSel_i  ),
+    .bSel_i   (bSel_i  ),
     .aluSel_i (aluSel_i),
-    .aluC_o   (aluC_o)
+    .aluC_o   (aluC_o  )
 );
 
 comp exe_comp (
-    .rd1_i  (rd1_i) ,
-    .rd2_i  (rd2_i) ,
+    .rd1_i  (rd1_i ),
+    .rd2_i  (rd2_i ),
     .brUn_i (brUn_i),
 
     .brEQ_o (brEQ_t),

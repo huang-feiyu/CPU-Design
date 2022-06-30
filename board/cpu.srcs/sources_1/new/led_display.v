@@ -3,16 +3,9 @@
 module led_display(
     input             clk_i   ,
     input             rst_n_i ,
-    input      [31:0] pc_i    ,
+    input      [31:0] data_i  ,
     output reg [7 :0] led_en_o,
-    output reg        led_ca_o,
-    output reg        led_cb_o,
-    output reg        led_cc_o,
-    output reg        led_cd_o,
-    output reg        led_ce_o,
-    output reg        led_cf_o,
-    output reg        led_cg_o,
-    output reg        led_dp_o
+    output reg [7 :0] led_dt_o
 );
 
 reg [2:0] led_cn_t; // current number
@@ -42,15 +35,15 @@ reg [3:0] led_display;
 
 always @(*) begin
     case (led_cn_t)
-        3'h000 : led_display = pc_i[3 :0 ];
-        3'h001 : led_display = pc_i[7 :4 ];
-        3'h010 : led_display = pc_i[11:8 ];
-        3'h011 : led_display = pc_i[15:12];
-        3'h100 : led_display = pc_i[19:16];
-        3'h101 : led_display = pc_i[23:20];
-        3'h110 : led_display = pc_i[27:24];
-        3'h111 : led_display = pc_i[31:28];
-        default: led_display = 4'b0000    ;
+        3'b000 : led_display = data_i[3 :0 ];
+        3'b001 : led_display = data_i[7 :4 ];
+        3'b010 : led_display = data_i[11:8 ];
+        3'b011 : led_display = data_i[15:12];
+        3'b100 : led_display = data_i[19:16];
+        3'b101 : led_display = data_i[23:20];
+        3'b110 : led_display = data_i[27:24];
+        3'b111 : led_display = data_i[31:28];
+        default: led_display = 4'b0000;
     endcase
 end
 
@@ -78,7 +71,7 @@ wire eqf = (led_display == 4'hf);
 * |--G--|    *
 * E     C    *
 * |--D--| .  *
-*         ↓  *
+*         ⬆️  *
 *         DP *
 **************/
 
@@ -91,42 +84,43 @@ wire led_cf_d = ~(eq0 | eq4 | eq5 | eq6 | eq8 | eq9 | eqa | eqb | eqc | eqd | eq
 wire led_cg_d = ~(eq2 | eq3 | eq4 | eq5 | eq6 | eq8 | eq9 | eqa | eqb | eqd | eqe | eqf);
 
 always @(posedge clk_i or negedge rst_n_i) begin
-    if (~rst_n_i) led_ca_o <= 1'b0    ;
-    else          led_ca_o <= led_ca_d;
+    if (~rst_n_i) led_dt_o[0] <= 1'b0    ;
+    else          led_dt_o[0] <= led_ca_d;
 end
 
 always @(posedge clk_i or negedge rst_n_i) begin
-    if (~rst_n_i) led_cb_o <= 1'b0    ;
-    else          led_cb_o <= led_cb_d;
+    if (~rst_n_i) led_dt_o[1] <= 1'b0    ;
+    else          led_dt_o[1] <= led_cb_d;
 end
 
 always @(posedge clk_i or negedge rst_n_i) begin
-    if (~rst_n_i) led_cc_o <= 1'b0    ;
-    else          led_cc_o <= led_cc_d;
+    if (~rst_n_i) led_dt_o[2] <= 1'b0    ;
+    else          led_dt_o[2] <= led_cc_d;
 end
 
 always @(posedge clk_i or negedge rst_n_i) begin
-    if (~rst_n_i) led_cd_o <= 1'b0    ;
-    else          led_cd_o <= led_cd_d;
+    if (~rst_n_i) led_dt_o[3] <= 1'b0    ;
+    else          led_dt_o[3] <= led_cd_d;
 end
 
 always @(posedge clk_i or negedge rst_n_i) begin
-    if (~rst_n_i) led_ce_o <= 1'b0    ;
-    else          led_ce_o <= led_ce_d;
+    if (~rst_n_i) led_dt_o[4] <= 1'b0    ;
+    else          led_dt_o[4] <= led_ce_d;
 end
 
 always @(posedge clk_i or negedge rst_n_i) begin
-    if (~rst_n_i) led_cf_o <= 1'b0    ;
-    else          led_cf_o <= led_cf_d;
+    if (~rst_n_i) led_dt_o[5] <= 1'b0    ;
+    else          led_dt_o[5] <= led_cf_d;
 end
 
 always @(posedge clk_i or negedge rst_n_i) begin
-    if (~rst_n_i) led_cg_o <= 1'b0    ;
-    else          led_cg_o <= led_cg_d;
+    if (~rst_n_i) led_dt_o[6] <= 1'b0    ;
+    else          led_dt_o[6] <= led_cg_d;
 end
 
 always @(posedge clk_i or negedge rst_n_i) begin
-    led_dp_o <= 1'b1;
+    if (~rst_n_i) led_dt_o[7] <= 1'b1;
+    else          led_dt_o[7] <= 1'b1;
 end
 
 endmodule

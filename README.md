@@ -319,6 +319,13 @@ endcase
 
 创建一个新工程 [board](./board/), 并在其中创建 `top.v`.
 
-添加总线桥 `io_bus.v`, 连接各外设.
+<s>添加总线桥 <code>io_bus.v</code>, 连接各外设.</s> 直接使用 `data_ram.v` 即可.
 
-* `led_display.v`: LED 显示
+* `data_ram.v`
+    * `dram.v`: 内存模块
+    * `led_display.v`: Digit 显示模块
+    * `divider.v`: 时钟分频模块
+    * LED 显示模块
+    * SW 取数模块
+
+等待下板验证...
