@@ -329,3 +329,40 @@ endcase
     * SW 取数模块
 
 等待下板验证...
+
+---
+
+<font color="red"><strong>血泪教训</strong>: 先在仿真中调试完成外设信号, 再进行下板</font>
+
+1. 数码管不亮, LED 与 SW 取数模块正常工作
+
+* `led_display.v`: 行为正常
+
+<strong>*</strong> 忘记写 DRAM 的复位信号 => bug07
+
+```diff
+data_ram CPU_DRAM (
+    .clk_i    (clk    ),
+>   .rst_i    (rst_n_i)
+);
+```
+
+2. 数码管黯淡
+
+添加 `divider.v`.
+
+3. 切换时, 存在时序 bug
+
+<strong>*</strong> `data_digit` 会在一瞬间变成下一个数据的值 => bug08
+
+```diff
+< data_digit = (aluC_i == 32'hFFFFF000 && memW_i) ? rd2_i : data_digit;
+---
+> always @(posedge clk_i) begin
+>     if (aluC_i == 32'hFFFFF000 && memW_i) data_digit <= rd2_i     ;
+>     else                                  data_digit <= data_digit;
+end
+```
+
+<details><summary>FPGA board</summary><img src="https://user-images.githubusercontent.com/70138429/176848507-06c07d40-1eb1-4139-b926-40208be5b617.png"><br/><img src="https://user-images.githubusercontent.com/70138429/176848447-8f66b201-36a3-4488-9adc-819f8de6e9b2.png"></details>
+

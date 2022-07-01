@@ -32,22 +32,25 @@ dram U_dram (
 );
 
 // read from the dram/SW
-always @(*) begin
+always @(*)begin
     if (aluC_i == 32'hFFFFF070) mem_rd_o = {8'b0, device_sw[23:0]};
     else                        mem_rd_o = tmp_rd;
 end
 
 // led control (NOT digit)
-always @(*) begin
+always @(*)begin
     if (aluC_i == 32'hFFFFF060 && memW_i) device_led = rd2_i[23:0];
     else                                  device_led = device_led ;
 end
 
 // digit tube control
-wire        clk_digit     ;
-wire [31:0] data_digit = 0;
+wire       clk_digit ;
+reg [31:0] data_digit;
 
-assign data_digit = (aluC_i == 32'hFFFFF000 && memW_i) ? rd2_i : data_digit;
+always @(posedge clk_i) begin
+    if (aluC_i == 32'hFFFFF000 && memW_i) data_digit <= rd2_i     ;
+    else                                  data_digit <= data_digit;
+end
 
 divider U_divider (
     .clk_i (clk_i    ),
