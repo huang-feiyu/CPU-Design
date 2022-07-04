@@ -11,11 +11,11 @@ module data_ram(
 );
 
 dram U_dram (
-    .clk (clk_i)       ,
+    .clk (clk_i       ),
     .a   (aluC_i[15:2]),
-    .spo (mem_rd_o)    ,
-    .we  (memW_i)      ,
-    .d   (rd2_i)
+    .spo (mem_rd_o    ),
+    .we  (memW_i      ),
+    .d   (rd2_i       )
 );
 
 endmodule

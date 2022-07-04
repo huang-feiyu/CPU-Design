@@ -23,7 +23,7 @@ always @(*) begin
         `IMMSEL_SB: ext_o = {{(19){inst_i[31]}}, inst_i[31], inst_i[7], inst_i[30:25], inst_i[11:8], 1'b0};
         `IMMSEL_U : ext_o = {inst_i[31:12], 12'b0};
         `IMMSEL_UJ: ext_o = {{(11){inst_i[31]}}, inst_i[31], inst_i[19:12], inst_i[20], inst_i[30:21], 1'b0};
-        default:    ext_o = 32'b0;
+        default   : ext_o = 32'b0;
     endcase
 end
 

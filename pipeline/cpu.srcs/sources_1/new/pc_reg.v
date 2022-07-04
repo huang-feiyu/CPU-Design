@@ -15,9 +15,9 @@ always @(posedge clk_i) begin
 end
 
 always @(posedge clk_i, negedge rst_n_i) begin
-    if(~rst_n_i)         pc_o <= 32'b0;
-    else if (~rst_n_p)   pc_o <= 32'b0;
-    else                 pc_o <= npc_i;
+    if(~rst_n_i)       pc_o <= 32'b0;
+    else if (~rst_n_p) pc_o <= 32'b0;
+    else               pc_o <= npc_i;
 end
 
 endmodule

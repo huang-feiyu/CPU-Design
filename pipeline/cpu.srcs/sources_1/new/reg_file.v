@@ -24,14 +24,14 @@ assign rd2_o = regfile[rs2_i];
 
 // write to RF
 always @(posedge clk_i or negedge rst_n_i) begin
-    if (~rst_n_i) begin
-        for (i = 0; i < 32; i = i + 1) begin
+    if (~rst_n_i)
+        for (i = 0; i < 32; i = i + 1)
             regfile[i] <= 32'b0;
-        end
-    end else begin
-        if (regWEn_i) regfile[wr_i] <= wd_i         ;
-        else          regfile[wr_i] <= regfile[wr_i];
-    end
+    else if (regWEn_i)
+        regfile[wr_i] <= wd_i         ;
+    else
+        regfile[wr_i] <= regfile[wr_i];
+
     regfile[0] <= 0;
 end
 

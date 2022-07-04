@@ -24,18 +24,18 @@ module control #(
     parameter FUNCT3_BLT    = 3'b100    ,
     parameter FUNCT3_BGE    = 3'b101
 )(
-    input      [31:0] inst_i    ,
+    input      [31:0] inst_i  ,
 
-    output            pcSel_o   ,
-    output            regWEn_o  ,
-    output reg [1 :0] wbSel_o   ,
-    output reg [2 :0] immSel_o  ,
-    output reg [3 :0] aluSel_o  ,
-    output            aSel_o    ,
-    output            bSel_o    ,
-    output            brUn_o    ,
-    output reg [2 :0] brSel_o   ,
-    output            mem_o     ,
+    output            pcSel_o ,
+    output            regWEn_o,
+    output reg [1 :0] wbSel_o ,
+    output reg [2 :0] immSel_o,
+    output reg [3 :0] aluSel_o,
+    output            aSel_o  ,
+    output            bSel_o  ,
+    output            brUn_o  ,
+    output reg [2 :0] brSel_o ,
+    output            mem_o   ,
     output            memW_o
 );
 

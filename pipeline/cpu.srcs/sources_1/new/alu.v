@@ -28,7 +28,7 @@ always @(*) begin
         `ALUSEL_SRL: aluC_o = a >> shamt;
         `ALUSEL_SRA: aluC_o = $signed(a) >>> shamt;
         `ALUSEL_LUI: aluC_o = b; // rd <- {imm[31:12], 12'b0}
-        default:     aluC_o = aluC_o;
+        default    : aluC_o = aluC_o;
     endcase
 end
 
