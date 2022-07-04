@@ -366,3 +366,15 @@ end
 
 <details><summary>FPGA board</summary><img src="https://user-images.githubusercontent.com/70138429/176848507-06c07d40-1eb1-4139-b926-40208be5b617.png"><br/><img src="https://user-images.githubusercontent.com/70138429/176848447-8f66b201-36a3-4488-9adc-819f8de6e9b2.png"></details>
 
+## lab3
+
+> 流水线 CPU 设计
+
+采用[经典五级流水线](https://en.wikipedia.org/wiki/Classic_RISC_pipeline)设计.
+
+在这之前需要修改此前的单周期 CPU 的 WB 阶段代码, 分离出一个新的模块 `wb_top`.
+——后续视情况而定, 是否将现在各个零散的模块组合成五个分离的模块: IF, ID, EXE, MEM, WB.
+
+### lab3-1
+
+> [lab3](./lab3): 理想流水线
