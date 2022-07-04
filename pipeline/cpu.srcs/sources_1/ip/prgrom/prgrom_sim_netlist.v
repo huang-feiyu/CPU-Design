@@ -1,7 +1,7 @@
 // Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2018.3 (win64) Build 2405991 Thu Dec  6 23:38:27 MST 2018
-// Date        : Mon Jul  4 16:09:36 2022
+// Date        : Mon Jul  4 19:36:25 2022
 // Host        : PC-Huang running 64-bit major release  (build 9200)
 // Command     : write_verilog -force -mode funcsim
 //               P:/Project/iverilog/Exp/pipeline/cpu.srcs/sources_1/ip/prgrom/prgrom_sim_netlist.v
@@ -232,8 +232,8 @@ module prgrom_dist_mem_gen_v8_0_12
   assign spo[27] = \^spo [31];
   assign spo[26] = \^spo [31];
   assign spo[25:24] = \^spo [25:24];
-  assign spo[23] = \<const0> ;
-  assign spo[22] = \^spo [31];
+  assign spo[23] = \^spo [31];
+  assign spo[22] = \<const0> ;
   assign spo[21:20] = \^spo [21:20];
   assign spo[19] = \^spo [31];
   assign spo[18] = \^spo [31];

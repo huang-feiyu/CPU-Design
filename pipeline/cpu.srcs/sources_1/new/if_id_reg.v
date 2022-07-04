@@ -14,17 +14,17 @@ module if_id_reg(
 );
 
 always @(posedge clk_i or negedge rst_n_i) begin
-    if (~rst_n_i) id_pc_o <= 32'h0  ;
+    if (~rst_n_i) id_pc_o <= 'b0    ;
     else          id_pc_o <= if_pc_i;
 end
 
 always @(posedge clk_i or negedge rst_n_i) begin
-    if (~rst_n_i) id_pc4_o <= 32'h0   ;
+    if (~rst_n_i) id_pc4_o <= 'b0     ;
     else          id_pc4_o <= if_pc4_i;
 end
 
 always @(posedge clk_i or negedge rst_n_i) begin
-    if (~rst_n_i) id_inst_o <= 32'h0    ;
+    if (~rst_n_i) id_inst_o <= 'b0      ;
     else          id_inst_o <= if_inst_i;
 end
 

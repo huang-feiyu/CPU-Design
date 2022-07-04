@@ -3,7 +3,6 @@
 module data_ram(
     input         clk_i ,
     input  [31:0] aluC_i,
-    input         mem_i , // do nothing?
     input         memW_i,
     input  [31:0] rd2_i ,
 

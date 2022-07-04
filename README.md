@@ -381,12 +381,27 @@ end
 
 理想流水线: 假设指令之间没有任何 hazard 存在, 不考虑数据冒险与控制冒险.
 
-0. 先编写一个**无冒险**测试指令, 写到 IROM 中.
-1. `if_id_reg.v`
-    * `npc`
-    * `pc4`
-    * `inst`
-2. `id_exe_reg.v`
-    * ``
+0\. 先编写一个**无冒险**测试指令, 写到 IROM 中.
 
+1\. `if_id_reg.v`
+* `pc`
+* `pc4`
+* `inst`
 
+2\. `id_exe_reg.v`
+* `pc`
+* `pc4`
+* `pcSel`
+* `wbSel`
+* `aluSel`
+* `aSel`
+* `bSel`
+* `brSel`
+* `memW`
+* `ext`
+* `rd1`
+* `rd2`
+
+<strong>*</strong> RF 写入数据时出现时序错误 => bug09
+
+经过排查, 错误存在于 `id_exe_reg.v` 中.
