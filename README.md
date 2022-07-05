@@ -401,7 +401,28 @@ end
 * `ext`
 * `rd1`
 * `rd2`
+* `wr_o`
+* `regWEn_o`
 
-<strong>*</strong> RF 写入数据时出现时序错误 => bug09
+<strong>*</strong> RF 写入数据时出现时序前移错误 => bug09
 
-经过排查, 错误存在于 `id_exe_reg.v` 中.
+经过排查, 错误在加入 `id_exe_reg.v` 后出现. 在 WB 阶段出现错误, 将 RF 中的部分逻辑后移.
+
+```diff
+  * `ext`
+  * `rd1`
+  * `rd2`
+> * `wr_o`
+> * `regWEn_o`
+```
+
+<strong>*</strong> RF 写入数据时出现时序后移错误 => bug10
+
+```diff
+< always @(posedge clk_i or negedge rst_n_i) begin
+<    if (~rst_n_i) wr_o <= 'b0         ;
+<    else          wr_o <= inst_i[11:7];
+< end
+---
+> assign wr_o = !rst_n_i ? 'b0 : inst_i[11:7];
+```

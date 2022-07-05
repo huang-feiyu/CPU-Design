@@ -24,10 +24,11 @@ wire [31:0] id_inst;
 wire [31:0] id_rd1;
 wire [31:0] id_rd2;
 wire [31:0] id_ext;
-wire id_pcSel, id_aSel, id_bSel, id_memW;
+wire id_pcSel, id_aSel, id_bSel, id_memW, id_regWEn;
 wire [1:0] id_wbSel ;
 wire [2:0] id_brSel ;
 wire [3:0] id_aluSel;
+wire [4:0] id_wr    ;
 
 // signals EXE gets from ID:
 wire [31:0] exe_pc ;
@@ -36,10 +37,11 @@ wire [31:0] exe_pc4;
 wire [31:0] exe_rd1;
 wire [31:0] exe_rd2;
 wire [31:0] exe_ext;
-wire exe_pcSel, exe_aSel, exe_bSel, exe_memW;
+wire exe_pcSel, exe_aSel, exe_bSel, exe_memW, exe_regWEn;
 wire [1:0] exe_wbSel ;
 wire [2:0] exe_brSel ;
 wire [3:0] exe_aluSel;
+wire [4:0] exe_wr    ;
 
 // signals EXE generates:
 wire [31:0] aluC  ;
@@ -90,20 +92,24 @@ if_id_reg CPU_IF_ID (
 
 // ID
 id_top CPU_ID (
-    .clk_i    (clk      ),
-    .rst_n_i  (rst_n_i  ),
-    .inst_i   (id_inst  ),
-    .wd_i     (wd       ),
-    .rd1_o    (id_rd1   ),
-    .rd2_o    (id_rd2   ),
-    .ext_o    (id_ext   ),
-    .pcSel_o  (id_pcSel ),
-    .wbSel_o  (id_wbSel ),
-    .aluSel_o (id_aluSel),
-    .aSel_o   (id_aSel  ),
-    .bSel_o   (id_bSel  ),
-    .brSel_o  (id_brSel ),
-    .memW_o   (id_memW  )
+    .clk_i    (clk       ),
+    .rst_n_i  (rst_n_i   ),
+    .inst_i   (id_inst   ),
+    .wd_i     (wd        ),
+    .wr_i     (exe_wr    ), // NOTE: temp
+    .regWEn_i (exe_regWEn), // NOTE: temp
+    .rd1_o    (id_rd1    ),
+    .rd2_o    (id_rd2    ),
+    .ext_o    (id_ext    ),
+    .wr_o     (id_wr     ),
+    .regWEn_o (id_regWEn ),
+    .pcSel_o  (id_pcSel  ),
+    .wbSel_o  (id_wbSel  ),
+    .aluSel_o (id_aluSel ),
+    .aSel_o   (id_aSel   ),
+    .bSel_o   (id_bSel   ),
+    .brSel_o  (id_brSel  ),
+    .memW_o   (id_memW   )
 );
 
 // ID/EXE
@@ -123,6 +129,8 @@ id_exe_reg CPU_ID_EXE (
     .id_ext_i     (id_ext   ),
     .id_rd1_i     (id_rd1   ),
     .id_rd2_i     (id_rd2   ),
+    .id_wr_i      (id_wr    ),
+    .id_regWEn_i  (id_regWEn),
 
     .exe_pc_o     (exe_pc    ),
     .exe_pc4_o    (exe_pc4   ),
@@ -135,7 +143,9 @@ id_exe_reg CPU_ID_EXE (
     .exe_memW_o   (exe_memW  ),
     .exe_ext_o    (exe_ext   ),
     .exe_rd1_o    (exe_rd1   ),
-    .exe_rd2_o    (exe_rd2   )
+    .exe_rd2_o    (exe_rd2   ),
+    .exe_wr_o     (exe_wr    ),
+    .exe_regWEn_o (exe_regWEn)
 );
 
 // EXE
@@ -149,7 +159,6 @@ exe_top CPU_EXE (
     .aluSel_i (exe_aluSel),
     .brSel_i  (exe_brSel ),
     .pcSel_i  (exe_pcSel ),
-    .brUn_i   (exe_brUn  ),
     .aluC_o   (aluC      ),
     .branch_o (branch    )
 );

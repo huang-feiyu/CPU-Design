@@ -3,7 +3,6 @@
 module comp(
     input  [31:0] rd1_i ,
     input  [31:0] rd2_i ,
-    input         brUn_i,
 
     output        brEQ_o,
     output reg    brLT_o

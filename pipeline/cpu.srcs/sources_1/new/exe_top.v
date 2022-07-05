@@ -10,7 +10,6 @@ module exe_top(
     input  [3 :0] aluSel_i,
 
     input  [2 :0] brSel_i ,
-    input         brUn_i  ,
 
     input         pcSel_i ,
 
@@ -35,7 +34,6 @@ alu exe_alu (
 comp exe_comp (
     .rd1_i  (rd1_i ),
     .rd2_i  (rd2_i ),
-    .brUn_i (brUn_i),
 
     .brEQ_o (brEQ_t),
     .brLT_o (brLT_t)

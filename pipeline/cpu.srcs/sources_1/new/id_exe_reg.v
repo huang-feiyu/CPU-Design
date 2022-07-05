@@ -16,6 +16,8 @@ module id_exe_reg(
     input      [31:0] id_ext_i    ,
     input      [31:0] id_rd1_i    ,
     input      [31:0] id_rd2_i    ,
+    output     [4 :0] id_wr_i     ,
+    output            id_regWEn_i ,
 
     output reg [31:0] exe_pc_o    ,
     output reg [31:0] exe_pc4_o   ,
@@ -28,7 +30,9 @@ module id_exe_reg(
     output reg        exe_memW_o  ,
     output reg [31:0] exe_ext_o   ,
     output reg [31:0] exe_rd1_o   ,
-    output reg [31:0] exe_rd2_o
+    output reg [31:0] exe_rd2_o   ,
+    output reg [4 :0] exe_wr_o    ,
+    output reg        exe_regWEn_o
 );
 
 always @(posedge clk_i or negedge rst_n_i) begin
@@ -89,6 +93,16 @@ end
 always @(posedge clk_i or negedge rst_n_i) begin
     if (~rst_n_i) exe_rd2_o <= 'b0     ;
     else          exe_rd2_o <= id_rd2_i;
+end
+
+always @(posedge clk_i or negedge rst_n_i) begin
+    if (~rst_n_i) exe_wr_o <= 'b0    ;
+    else          exe_wr_o <= id_wr_i;
+end
+
+always @(posedge clk_i or negedge rst_n_i) begin
+    if (~rst_n_i) exe_regWEn_o <= 'b0        ;
+    else          exe_regWEn_o <= id_regWEn_i;
 end
 
 endmodule

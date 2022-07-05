@@ -5,11 +5,16 @@ module id_top(
     input         rst_n_i ,
     input  [31:0] inst_i  ,
 
+    // WB
     input  [31:0] wd_i    ,
+    input  [4 :0] wr_i    ,
+    input         regWEn_i,
 
     output [31:0] rd1_o   ,
     output [31:0] rd2_o   ,
     output [31:0] ext_o   ,
+    output [4 :0] wr_o    ,
+    output        regWEn_o,
 
     output        pcSel_o ,
     output [1 :0] wbSel_o ,
@@ -20,16 +25,23 @@ module id_top(
     output        memW_o
 );
 
-wire regWEn, brUn, mem;
+wire brUn, mem;
 wire [2:0] immSel;
+
+assign wr_o = !rst_n_i ? 'b0 : inst_i[11:7];
+
+always @(posedge clk_i or negedge rst_n_i) begin
+    if (~rst_n_i) wr_o <= 'b0         ;
+    else          wr_o <= inst_i[11:7];
+end
 
 reg_file CPU_RF (
     .clk_i    (clk_i        ),
     .rst_n_i  (rst_n_i      ),
     .rs1_i    (inst_i[19:15]),
     .rs2_i    (inst_i[24:20]),
-    .regWEn_i (regWEn       ),
-    .wr_i     (inst_i[11:7 ]),
+    .regWEn_i (regWEn_i     ),
+    .wr_i     (wr_i         ),
     .wd_i     (wd_i         ),
     .rd1_o    (rd1_o        ),
     .rd2_o    (rd2_o        )
@@ -44,7 +56,7 @@ imm_gen CPU_SEXT (
 control U_CTRL (
     .inst_i   (inst_i  ),
     .pcSel_o  (pcSel_o ),
-    .regWEn_o (regWEn  ),
+    .regWEn_o (regWEn_o),
     .wbSel_o  (wbSel_o ),
     .immSel_o (immSel  ),
     .aluSel_o (aluSel_o),
