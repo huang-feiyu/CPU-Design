@@ -58,8 +58,16 @@ wire [31:0] mem_aluC ;
 // signals MEM generates:
 wire [31:0] mem_rd;
 
+// signals WB gets from MEM:
+wire wb_regWEn, wb_branch;
+wire [31:0] wb_aluC ;
+wire [31:0] wb_rd   ;
+wire [31:0] wb_pc4  ;
+wire [1: 0] wb_wbSel;
+wire [4: 0] wb_wr   ;
+
 // signals WB generates
-wire [31:0] wd;
+wire [31:0] wb_wd;
 
 // instantiate in a specific order
 cpuclk CPU_CLK (
@@ -69,14 +77,14 @@ cpuclk CPU_CLK (
 
 // IF
 if_top CPU_IF (
-    .clk_i    (clk       ),
-    .rst_n_i  (rst_n_i   ),
-    .aluC_i   (mem_aluC  ), // NOTE: temp
-    .branch_i (mem_branch), // NOTE: temp
-    .en_i     (pc_en     ),
+    .clk_i    (clk      ),
+    .rst_n_i  (rst_n_i  ),
+    .aluC_i   (wb_aluC  ),
+    .branch_i (wb_branch),
+    .en_i     (pc_en    ),
 
-    .pc_o     (if_pc   ),
-    .pc4_o    (if_pc4  )
+    .pc_o     (if_pc    ),
+    .pc4_o    (if_pc4   )
 );
 
 inst_rom CPU_IROM (
@@ -100,24 +108,24 @@ if_id_reg CPU_IF_ID (
 
 // ID
 id_top CPU_ID (
-    .clk_i    (clk       ),
-    .rst_n_i  (rst_n_i   ),
-    .inst_i   (id_inst   ),
-    .wd_i     (wd        ),
-    .wr_i     (mem_wr    ), // NOTE: temp
-    .regWEn_i (mem_regWEn), // NOTE: temp
-    .rd1_o    (id_rd1    ),
-    .rd2_o    (id_rd2    ),
-    .ext_o    (id_ext    ),
-    .wr_o     (id_wr     ),
-    .regWEn_o (id_regWEn ),
-    .pcSel_o  (id_pcSel  ),
-    .wbSel_o  (id_wbSel  ),
-    .aluSel_o (id_aluSel ),
-    .aSel_o   (id_aSel   ),
-    .bSel_o   (id_bSel   ),
-    .brSel_o  (id_brSel  ),
-    .memW_o   (id_memW   )
+    .clk_i    (clk      ),
+    .rst_n_i  (rst_n_i  ),
+    .inst_i   (id_inst  ),
+    .wd_i     (wb_wd    ),
+    .wr_i     (wb_wr    ),
+    .regWEn_i (wb_regWEn),
+    .rd1_o    (id_rd1   ),
+    .rd2_o    (id_rd2   ),
+    .ext_o    (id_ext   ),
+    .wr_o     (id_wr    ),
+    .regWEn_o (id_regWEn),
+    .pcSel_o  (id_pcSel ),
+    .wbSel_o  (id_wbSel ),
+    .aluSel_o (id_aluSel),
+    .aSel_o   (id_aSel  ),
+    .bSel_o   (id_bSel  ),
+    .brSel_o  (id_brSel ),
+    .memW_o   (id_memW  )
 );
 
 // ID/EXE
@@ -196,7 +204,7 @@ exe_mem_reg CPU_EXE_MEM (
 );
 
 // MEM
-data_ram CPU_DRAM (
+data_ram CPU_MEM (
     .clk_i    (clk     ),
     .aluC_i   (mem_aluC),
     .memW_i   (mem_memW),
@@ -204,13 +212,35 @@ data_ram CPU_DRAM (
     .mem_rd_o (mem_rd  )
 );
 
+// MEM/WB
+mem_wb_reg CPU_MEM_WB (
+    .clk_i        (clk       ),
+    .rst_n_i      (rst_n_i   ),
+
+    .mem_branch_i (mem_branch),
+    .mem_aluC_i   (mem_aluC  ),
+    .mem_rd_i     (mem_rd    ),
+    .mem_pc4_i    (mem_pc4   ),
+    .mem_wbSel_i  (mem_wbSel ),
+    .mem_regWEn_i (mem_regWEn),
+    .mem_wr_i     (mem_wr    ),
+
+    .wb_branch_o  (wb_branch ),
+    .wb_aluC_o    (wb_aluC   ),
+    .wb_rd_o      (wb_rd     ),
+    .wb_pc4_o     (wb_pc4    ),
+    .wb_wbSel_o   (wb_wbSel  ),
+    .wb_regWEn_o  (wb_regWEn ),
+    .wb_wr_o      (wb_wr     )
+);
+
 // WB
 wb_top CPU_WB (
-    .wbSel_i  (mem_wbSel), // NOTE: temp
-    .aluC_i   (mem_aluC ), // NOTE: temp
-    .mem_rd_i (mem_rd   ), // NOTE: temp
-    .pc4_i    (mem_pc4  ), // NOTE: temp
-    .wd_o     (wd       )
+    .wbSel_i  (wb_wbSel),
+    .aluC_i   (wb_aluC ),
+    .mem_rd_i (wb_rd   ),
+    .pc4_i    (wb_pc4  ),
+    .wd_o     (wb_wd   )
 );
 
 endmodule

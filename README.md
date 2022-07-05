@@ -438,4 +438,22 @@ end
 * `branch`
 
 4\. `mem_wb_reg.v`
+* `branch`
+* `aluC`
+* `rd`
+* `pc4`
+* `wbSel`
+* `regWEn`
+* `wr`
+
+<strong>*</strong> RF 写回高阻态数据 => bug11
+
+```diff
+id_top CPU_ID (
+    .clk_i    (clk      ),
+    .rst_n_i  (rst_n_i  ),
+<   .wd_i     (wd       ),
+>   .wd_i     (wb_wd    ),
+);
+```
 
