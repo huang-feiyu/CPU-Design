@@ -9,7 +9,7 @@ module data_ram(
     output [31:0] mem_rd_o
 );
 
-dram U_dram (
+dram U_DRAM (
     .clk (clk_i       ),
     .a   (aluC_i[15:2]),
     .spo (mem_rd_o    ),

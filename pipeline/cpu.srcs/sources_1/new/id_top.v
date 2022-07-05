@@ -30,12 +30,7 @@ wire [2:0] immSel;
 
 assign wr_o = !rst_n_i ? 'b0 : inst_i[11:7];
 
-always @(posedge clk_i or negedge rst_n_i) begin
-    if (~rst_n_i) wr_o <= 'b0         ;
-    else          wr_o <= inst_i[11:7];
-end
-
-reg_file CPU_RF (
+reg_file U_RF (
     .clk_i    (clk_i        ),
     .rst_n_i  (rst_n_i      ),
     .rs1_i    (inst_i[19:15]),
@@ -47,7 +42,7 @@ reg_file CPU_RF (
     .rd2_o    (rd2_o        )
 );
 
-imm_gen CPU_SEXT (
+imm_gen U_SEXT (
     .immSel_i (immSel      ),
     .inst_i   (inst_i[31:7]),
     .ext_o    (ext_o       )

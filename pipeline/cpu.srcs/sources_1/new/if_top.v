@@ -13,7 +13,7 @@ module if_top(
 
 wire [31:0] npc;
 
-pc_reg CPU_PC (
+pc_reg U_PC (
     .clk_i   (clk_i  ),
     .rst_n_i (rst_n_i),
     .en_i    (en_i   ),
@@ -21,7 +21,7 @@ pc_reg CPU_PC (
     .pc_o    (pc_o   )
 );
 
-next_pc CPU_NPC (
+next_pc U_NPC (
     .pc_i     (pc_o    ),
     .aluC_i   (aluC_i  ),
     .branch_i (branch_i),

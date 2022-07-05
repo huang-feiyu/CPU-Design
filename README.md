@@ -426,3 +426,16 @@ end
 ---
 > assign wr_o = !rst_n_i ? 'b0 : inst_i[11:7];
 ```
+
+3\. `exe_mem_reg.v`
+* `pc4`
+* `wbSel`
+* `memW`
+* `rd2`
+* `wr`
+* `regWEn`
+* `aluC`
+* `branch`
+
+4\. `mem_wb_reg.v`
+
