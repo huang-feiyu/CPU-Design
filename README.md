@@ -366,3 +366,94 @@ end
 
 <details><summary>FPGA board</summary><img src="https://user-images.githubusercontent.com/70138429/176848507-06c07d40-1eb1-4139-b926-40208be5b617.png"><br/><img src="https://user-images.githubusercontent.com/70138429/176848447-8f66b201-36a3-4488-9adc-819f8de6e9b2.png"></details>
 
+## lab3
+
+> 流水线 CPU 设计
+
+采用[经典五级流水线](https://en.wikipedia.org/wiki/Classic_RISC_pipeline)设计.
+
+在这之前需要修改此前的单周期 CPU 的 WB 阶段代码, 分离出一个新的模块 `wb_top`.
+——后续视情况而定, 是否将现在各个零散的模块组合成五个分离的模块: IF, ID, EXE, MEM, WB.
+
+### lab3-1
+
+> [lab3](./lab3): 理想流水线
+
+理想流水线: 假设指令之间没有任何 hazard 存在, 不考虑数据冒险与控制冒险.
+
+0\. 先编写一个**无冒险**测试指令, 写到 IROM 中.
+
+1\. `if_id_reg.v`
+* `pc`
+* `pc4`
+* `inst`
+
+2\. `id_exe_reg.v`
+* `pc`
+* `pc4`
+* `pcSel`
+* `wbSel`
+* `aluSel`
+* `aSel`
+* `bSel`
+* `brSel`
+* `memW`
+* `ext`
+* `rd1`
+* `rd2`
+* `wr_o`
+* `regWEn_o`
+
+<strong>*</strong> RF 写入数据时出现时序前移错误 => bug09
+
+经过排查, 错误在加入 `id_exe_reg.v` 后出现. 在 WB 阶段出现错误, 将 RF 中的部分逻辑后移.
+
+```diff
+  * `ext`
+  * `rd1`
+  * `rd2`
+> * `wr_o`
+> * `regWEn_o`
+```
+
+<strong>*</strong> RF 写入数据时出现时序后移错误 => bug10
+
+```diff
+< always @(posedge clk_i or negedge rst_n_i) begin
+<    if (~rst_n_i) wr_o <= 'b0         ;
+<    else          wr_o <= inst_i[11:7];
+< end
+---
+> assign wr_o = !rst_n_i ? 'b0 : inst_i[11:7];
+```
+
+3\. `exe_mem_reg.v`
+* `pc4`
+* `wbSel`
+* `memW`
+* `rd2`
+* `wr`
+* `regWEn`
+* `aluC`
+* `branch`
+
+4\. `mem_wb_reg.v`
+* `branch`
+* `aluC`
+* `rd`
+* `pc4`
+* `wbSel`
+* `regWEn`
+* `wr`
+
+<strong>*</strong> RF 写回高阻态数据 => bug11
+
+```diff
+id_top CPU_ID (
+    .clk_i    (clk      ),
+    .rst_n_i  (rst_n_i  ),
+<   .wd_i     (wd       ),
+>   .wd_i     (wb_wd    ),
+);
+```
+
