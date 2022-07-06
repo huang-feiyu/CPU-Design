@@ -176,7 +176,7 @@ Vivado 无法识别定义的宏.
 
 1. I 型指令
 
-> [I-type](./test/riscv/I_type_insts.asm)
+> [I-type](./test/riscv/NonPipeline/I_type_insts.asm)
 
 <strong>*</strong> `ASel==1` => bug01
 
@@ -191,7 +191,7 @@ assign aSel_o =   (op == OPCODE_SB)
 
 2. R 型指令
 
-> [R-type](./test/riscv/R_type_insts.asm)
+> [R-type](./test/riscv/NonPipeline/R_type_insts.asm)
 
 <strong>*</strong> `sub` & `ALUSel=0` => bug02
 
@@ -218,19 +218,19 @@ endcase
 
 3. MEM 访存指令
 
-> [MEM](./test/riscv/MEM_insts.asm)
+> [MEM](./test/riscv/NonPipeline/MEM_insts.asm)
 
 It is fine.
 
 4. U 型指令
 
-> [U-type](./test/riscv/U_type_insts.asm)
+> [U-type](./test/riscv/NonPipeline/U_type_insts.asm)
 
 It is fine.
 
 5. J 型指令
 
-> [J-type](./test/riscv/J_type_insts.asm)
+> [J-type](./test/riscv/NonPipeline/J_type_insts.asm)
 
 <strong>*</strong> `branch==1` => bug04
 
@@ -245,7 +245,7 @@ end
 
 6. B 型指令
 
-> [B-type](./test/riscv/B_type_insts.asm)
+> [B-type](./test/riscv/NonPipeline/B_type_insts.asm)
 
 ```assembly
 jal loop # jal x1, loop
@@ -255,7 +255,7 @@ It is fine.
 
 7. 混合指令
 
-> [Mixin](./test/riscv/Mixin_insts.asm): 魔改后的 lab1
+> [Mixin](./test/riscv/NonPipeline/Mixin_insts.asm): 魔改后的 lab1
 
 得到结果 -620<s>, 与预期 -20 不同.</s>, 正确.
 
@@ -381,7 +381,7 @@ end
 
 理想流水线: 假设指令之间没有任何 hazard 存在, 不考虑数据冒险与控制冒险.
 
-0\. 先编写一个**无冒险**测试指令, 写到 IROM 中.
+0\. 先编写一个**无冒险**[测试指令](./test/riscv/no_hazard_insts.asm), 写到 IROM 中.
 
 1\. `if_id_reg.v`
 * `pc`
@@ -456,4 +456,28 @@ id_top CPU_ID (
 >   .wd_i     (wb_wd    ),
 );
 ```
+
+### lab3-2
+
+> [lab3](./lab3): 停顿, 解决数据冒险和控制冒险
+
+0\. 编写存在**三种情形**数据冒险的[测试指令](./test/riscv/data_hazard_insts.asm), 写入 IROM
+
+根据所编写的测试指令, 可以看到:
+* none cycle data wrong: `x1`, `x6` (验证: 未破坏原有理想流水线的功能)
+* 1st cycle data wrong: `x2`, `x3`, `x4`
+* 1st & 2nd cycle data wrong: `x5`
+
+1\. 添加控制信号 (未添加到数据通路与控制信号表中)
+* `re1`: 是否读取 `rs1`<br/>`1`: 读取 `rs1`; `0`: 不读取 `rs1`
+* `re2`: 是否读取 `rs2` (同 `re1`)
+
+2\. `hazard_detector.v`: RAW, 写后读
+* A: (REG<sub>ID/EX</sub>.RD == ID.RS1) || (REG<sub>ID/EX</sub>.RD == ID.RS2)
+* B: (REG<sub>EX/MEM</sub>.RD == ID.RS1) || (REG<sub>EX/MEM</sub>.RD == ID.RS2)
+* C: (REG<sub>MEM/WB</sub>.RD == ID.RS1) || (REG<sub>MEM/WB</sub>.RD == ID.RS2)
+
+
+
+
 
