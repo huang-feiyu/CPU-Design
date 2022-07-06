@@ -78,14 +78,14 @@ cpuclk CPU_CLK (
 
 // IF
 if_top CPU_IF (
-    .clk_i    (clk      ),
-    .rst_n_i  (rst_n_i  ),
-    .aluC_i   (wb_aluC  ),
-    .branch_i (wb_branch),
-    .en_i     (pc_en    ),
+    .clk_i    (clk       ),
+    .rst_n_i  (rst_n_i   ),
+    .aluC_i   (exe_aluC  ), // NOTE: after EXE, IMMEDIATELY use aluC & branch
+    .branch_i (exe_branch),
+    .en_i     (pc_en     ),
 
-    .pc_o     (if_pc    ),
-    .pc4_o    (if_pc4   )
+    .pc_o     (if_pc     ),
+    .pc4_o    (if_pc4    )
 );
 
 inst_rom CPU_IROM (
