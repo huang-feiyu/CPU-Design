@@ -6,8 +6,8 @@ module hazard_detector(
 
     input         id_re1_i    ,
     input         id_re2_i    ,
-    input  [31:0] id_rs1_i    ,
-    input  [31:0] id_rs2_i    ,
+    input  [4 :0] id_rs1_i    ,
+    input  [4 :0] id_rs2_i    ,
     input  [4 :0] exe_wr_i    ,
     input  [4 :0] mem_wr_i    ,
     input  [4 :0] wb_wr_i     ,
@@ -15,9 +15,9 @@ module hazard_detector(
     input         mem_regWEn_i,
     input         wb_regWEn_i ,
 
-    output reg    pc_stop     ,
-    output reg    if_id_stop  ,
-    output reg    id_exe_stop
+    output reg    pc_stop_o   ,
+    output reg    if_id_stop_o,
+    output reg    id_exe_stop_o
 );
 
 wire rs1_id_exe_hazard, rs2_id_exe_hazard, rs_id_exe_hazard;
@@ -56,25 +56,25 @@ always @(posedge clk_i or negedge rst_n_i) begin
     else                 stop_cycle <= stop_cycle    ;
 end
 
-// pc_stop
+// pc_stop_o
 always @(posedge clk_i or negedge rst_n_i) begin
-    if (~rst_n_i)        pc_stop <= 1'b0;
-    else if (stop_cycle) pc_stop <= 1'b1;
-    else                 pc_stop <= 1'b0;
+    if (~rst_n_i)        pc_stop_o <= 1'b0;
+    else if (stop_cycle) pc_stop_o <= 1'b1;
+    else                 pc_stop_o <= 1'b0;
 end
 
-// if_id_stop
+// if_id_stop_o
 always @(posedge clk_i or negedge rst_n_i) begin
-    if (~rst_n_i)        if_id_stop <= 1'b0;
-    else if (stop_cycle) if_id_stop <= 1'b1;
-    else                 if_id_stop <= 1'b0;
+    if (~rst_n_i)        if_id_stop_o <= 1'b0;
+    else if (stop_cycle) if_id_stop_o <= 1'b1;
+    else                 if_id_stop_o <= 1'b0;
 end
 
-// id_exe_stop
+// id_exe_stop_o
 always @(posedge clk_i or negedge rst_n_i) begin
-    if (~rst_n_i)        id_exe_stop <= 1'b0;
-    else if (stop_cycle) id_exe_stop <= 1'b1;
-    else                 id_exe_stop <= 1'b0;
+    if (~rst_n_i)        id_exe_stop_o <= 1'b0;
+    else if (stop_cycle) id_exe_stop_o <= 1'b1;
+    else                 id_exe_stop_o <= 1'b0;
 end
 
 endmodule

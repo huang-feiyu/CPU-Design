@@ -12,6 +12,8 @@ module id_top(
 
     output        re1_o   ,
     output        re2_o   ,
+    output [4 :0] rs1_o   ,
+    output [4 :0] rs2_o   ,
     output [31:0] rd1_o   ,
     output [31:0] rd2_o   ,
     output [31:0] ext_o   ,
@@ -30,18 +32,20 @@ module id_top(
 wire brUn, mem;
 wire [2:0] immSel;
 
-assign wr_o = !rst_n_i ? 'b0 : inst_i[11:7];
+assign wr_o  = inst_i[11:7 ];
+assign rs1_o = inst_i[19:15];
+assign rs2_o = inst_i[24:20];
 
 reg_file U_RF (
-    .clk_i    (clk_i        ),
-    .rst_n_i  (rst_n_i      ),
-    .rs1_i    (inst_i[19:15]),
-    .rs2_i    (inst_i[24:20]),
-    .regWEn_i (regWEn_i     ),
-    .wr_i     (wr_i         ),
-    .wd_i     (wd_i         ),
-    .rd1_o    (rd1_o        ),
-    .rd2_o    (rd2_o        )
+    .clk_i    (clk_i   ),
+    .rst_n_i  (rst_n_i ),
+    .rs1_i    (rs1_o   ),
+    .rs2_i    (rs2_o   ),
+    .regWEn_i (regWEn_i),
+    .wr_i     (wr_i    ),
+    .wd_i     (wd_i    ),
+    .rd1_o    (rd1_o   ),
+    .rd2_o    (rd2_o   )
 );
 
 imm_gen U_SEXT (

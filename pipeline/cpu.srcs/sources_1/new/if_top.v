@@ -5,6 +5,7 @@ module if_top(
     input         rst_n_i ,
     input  [31:0] aluC_i  ,
     input         branch_i,
+    input         stop_i  ,
 
     output [31:0] pc4_o   ,
     output [31:0] pc_o
@@ -16,6 +17,7 @@ pc_reg U_PC (
     .clk_i   (clk_i  ),
     .rst_n_i (rst_n_i),
     .npc_i   (npc    ),
+    .stop_i  (stop_i ),
     .pc_o    (pc_o   )
 );
 

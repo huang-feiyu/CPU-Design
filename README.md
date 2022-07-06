@@ -472,12 +472,24 @@ id_top CPU_ID (
 * `re1`: 是否读取 `rs1`<br/>`1`: 读取 `rs1`; `0`: 不读取 `rs1`
 * `re2`: 是否读取 `rs2` (同 `re1`)
 
-2\. `hazard_detector.v`: RAW, 写后读
-* A: (REG<sub>ID/EX</sub>.RD == ID.RS1) || (REG<sub>ID/EX</sub>.RD == ID.RS2)
-* B: (REG<sub>EX/MEM</sub>.RD == ID.RS1) || (REG<sub>EX/MEM</sub>.RD == ID.RS2)
-* C: (REG<sub>MEM/WB</sub>.RD == ID.RS1) || (REG<sub>MEM/WB</sub>.RD == ID.RS2)
-
-
-
-
+2\. `hazard_detector.v`: 实现流水线暂停
+* Input Ports
+    * `id_re1`
+    * `id_re2`
+    * `id_rs1`
+    * `id_rs2`
+    * `exe_wr`
+    * `mem_wr`
+    * `wb_wr`
+    * `exe_regWEn`
+    * `mem_regWEn`
+    * `wb_regWEn`
+* Output Ports
+    * `pc_stop`
+    * `if_id_stop`
+    * `id_exe_stop`
+* Control Logic (数据冒险)<br/>保持 PC, IF/ID, ID/EXE 模块不变
+    * A: (REG<sub>ID/EX</sub>.RD == ID.RS1) || (REG<sub>ID/EX</sub>.RD == ID.RS2)<br/> => stop 3 cycles
+    * B: (REG<sub>EX/MEM</sub>.RD == ID.RS1) || (REG<sub>EX/MEM</sub>.RD == ID.RS2)<br/> => stop 2 cycles
+    * C: (REG<sub>MEM/WB</sub>.RD == ID.RS1) || (REG<sub>MEM/WB</sub>.RD == ID.RS2)<br/> => stop 1 cycle
 
