@@ -21,6 +21,7 @@ wire [31:0] id_pc4 ;
 wire [31:0] id_inst;
 
 // signals ID generates:
+wire id_re1,id_re2;
 wire [31:0] id_rd1;
 wire [31:0] id_rd2;
 wire [31:0] id_ext;
@@ -114,6 +115,8 @@ id_top CPU_ID (
     .wd_i     (wb_wd    ),
     .wr_i     (wb_wr    ),
     .regWEn_i (wb_regWEn),
+    .re1_o    (id_re1   ),
+    .re2_o    (id_re2   ),
     .rd1_o    (id_rd1   ),
     .rd2_o    (id_rd2   ),
     .ext_o    (id_ext   ),

@@ -2,6 +2,14 @@
 `ifndef CPU_PARAM
 `define CPU_PARAM
 
+    // re1: determine whether to read rs1
+    `define RE1_NON    'b0
+    `define RE1_EN     'b1
+
+    // re2: determine whether to read rs2
+    `define RE2_NON    'b0
+    `define RE2_EN     'b1
+
     // PCSel: determine to use Imm or PC+4
     `define PCSEL_PC4  'b0
     `define PCSEL_IMM  'b1

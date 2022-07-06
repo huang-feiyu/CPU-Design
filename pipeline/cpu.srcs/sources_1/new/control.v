@@ -26,6 +26,8 @@ module control #(
 )(
     input      [31:0] inst_i  ,
 
+    output            re1_o   ,
+    output            re2_o   ,
     output            pcSel_o ,
     output            regWEn_o,
     output reg [1 :0] wbSel_o ,
@@ -41,7 +43,16 @@ module control #(
 
 wire [6:0] op     = inst_i[6:0];
 wire [2:0] funct3 = inst_i[14:12];
-wire [7:0] funct7 = inst_i[31:25];
+wire [6:0] funct7 = inst_i[31:25];
+
+assign re1_o = (op == OPCODE_U )
+            || (op == OPCODE_UJ) ?
+            `RE1_NON : `RE1_EN   ;
+
+assign re2_o = (op == OPCODE_R )
+            || (op == OPCODE_S )
+            || (op == OPCODE_SB) ?
+            `RE2_EN : `RE2_NON   ;
 
 assign pcSel_o =   (op == OPCODE_I_JALR)
                 || (op == OPCODE_UJ    ) ?
