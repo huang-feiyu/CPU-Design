@@ -9,8 +9,6 @@ module mini_rv(
 wire clk;
 
 // signals IF generates:
-wire        pc_en;
-
 wire [31:0] if_pc  ;
 wire [31:0] if_pc4 ;
 wire [31:0] if_inst;
@@ -82,7 +80,6 @@ if_top CPU_IF (
     .rst_n_i  (rst_n_i   ),
     .aluC_i   (exe_aluC  ), // NOTE: after EXE, IMMEDIATELY use aluC & branch
     .branch_i (exe_branch),
-    .en_i     (pc_en     ),
 
     .pc_o     (if_pc     ),
     .pc4_o    (if_pc4    )
