@@ -493,3 +493,29 @@ id_top CPU_ID (
     * B: (REG<sub>EX/MEM</sub>.RD == ID.RS1) || (REG<sub>EX/MEM</sub>.RD == ID.RS2)<br/> => stop 2 cycles
     * C: (REG<sub>MEM/WB</sub>.RD == ID.RS1) || (REG<sub>MEM/WB</sub>.RD == ID.RS2)<br/> => stop 1 cycle
 
+<strong>*</strong> 流水线时序后移错误 => bug12
+
+在指令 1 执行后, 指令 2 没有被阻塞, 指令 3 被阻塞.
+
+```diff
+### 时序后移
+< always @(posedge clk_i or negedge rst_n_i) begin
+---
+> always @(*) begin
+    if (~rst_n_i)        pc_stop_o <= 1'b0;
+    else if (stop_cycle) pc_stop_o <= 1'b1;
+    else                 pc_stop_o <= 1'b0;
+end
+
+### 修改赋值顺序
+always @(posedge rs_id_mem_hazard or posedge rs_id_exe_hazard or posedge rs_id_wb_hazard) begin
+<   if (rs_id_exe_hazard)      stop_cycle <= 3;
+<   else if (rs_id_mem_hazard) stop_cycle <= 2;
+<   else if (rs_id_wb_hazard ) stop_cycle <= 1;
+---
+>   if (rs_id_wb_hazard )      stop_cycle <= 1;
+>   else if (rs_id_mem_hazard) stop_cycle <= 2;
+>   else if (rs_id_exe_hazard) stop_cycle <= 3;
+    else                       stop_cycle <= 0;
+end
+```

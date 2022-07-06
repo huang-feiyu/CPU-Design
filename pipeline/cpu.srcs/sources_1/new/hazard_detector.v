@@ -42,10 +42,10 @@ assign rs2_id_wb_hazard = (wb_wr_i == id_rs2_i) && wb_regWEn_i && id_re2_i && wb
 assign rs_id_wb_hazard  = rs1_id_wb_hazard || rs2_id_wb_hazard;
 
 // stop_cycle: init
-always @(posedge rs_id_mem_hazard or rs_id_exe_hazard or rs_id_wb_hazard) begin
-    if      (rs_id_exe_hazard) stop_cycle <= 3;
+always @(posedge rs_id_mem_hazard or posedge rs_id_exe_hazard or posedge rs_id_wb_hazard) begin
+    if (rs_id_wb_hazard )      stop_cycle <= 1;
     else if (rs_id_mem_hazard) stop_cycle <= 2;
-    else if (rs_id_wb_hazard ) stop_cycle <= 1;
+    else if (rs_id_exe_hazard) stop_cycle <= 3;
     else                       stop_cycle <= 0;
 end
 
@@ -57,21 +57,21 @@ always @(posedge clk_i or negedge rst_n_i) begin
 end
 
 // pc_stop_o
-always @(posedge clk_i or negedge rst_n_i) begin
+always @(*) begin
     if (~rst_n_i)        pc_stop_o <= 1'b0;
     else if (stop_cycle) pc_stop_o <= 1'b1;
     else                 pc_stop_o <= 1'b0;
 end
 
 // if_id_stop_o
-always @(posedge clk_i or negedge rst_n_i) begin
+always @(*) begin
     if (~rst_n_i)        if_id_stop_o <= 1'b0;
     else if (stop_cycle) if_id_stop_o <= 1'b1;
     else                 if_id_stop_o <= 1'b0;
 end
 
 // id_exe_stop_o
-always @(posedge clk_i or negedge rst_n_i) begin
+always @(*) begin
     if (~rst_n_i)        id_exe_stop_o <= 1'b0;
     else if (stop_cycle) id_exe_stop_o <= 1'b1;
     else                 id_exe_stop_o <= 1'b0;
