@@ -472,7 +472,7 @@ id_top CPU_ID (
 * `re1`: 是否读取 `rs1`<br/>`1`: 读取 `rs1`; `0`: 不读取 `rs1`
 * `re2`: 是否读取 `rs2` (同 `re1`)
 
-2\. `hazard_detector.v`: 实现流水线暂停
+2\. `hazard_detector.v`: 实现简单数据冒险的流水线暂停
 * Input Ports
     * `id_re1`
     * `id_re2`
@@ -519,3 +519,7 @@ always @(posedge rs_id_mem_hazard or posedge rs_id_exe_hazard or posedge rs_id_w
     else                       stop_cycle <= 0;
 end
 ```
+
+3\. `hazard_detector.v`: 实现访存数据冒险的流水线暂停
+
+同样地, 编写存在数据冒险的测试指令. 然后, 跑一次仿真.
