@@ -255,7 +255,7 @@ It is fine.
 
 7. 混合指令
 
-> [Mixin](./test/riscv/NonPipeline/Mixin_insts.asm): 魔改后的 lab1
+> [Mixin](./test/riscv/Mixin_insts.asm): 魔改后的 lab1
 
 得到结果 -620<s>, 与预期 -20 不同.</s>, 正确.
 
@@ -522,4 +522,14 @@ end
 
 3\. `hazard_detector.v`: 实现访存数据冒险的流水线暂停
 
-同样地, 编写存在数据冒险的测试指令. 然后, 跑一次仿真.
+同样地, 编写存在数据冒险的[测试指令](./test/riscv/lw_data_hazard_insts.asm). 然后, 跑一次仿真. 很容易就通过了.
+
+4\. `hazard_detector.v`: 实现控制冒险的流水线暂停<br/>测试指令使用 [Mixin](./test/riscv/NonPipeline/Mixin_insts.asm), 添加控制信号.
+* Input Ports
+    * `if_branch_i`
+* Control Logic: 只要是分支指令, 就暂停 2 cycles
+
+<strong>*</strong> 答案不正确, 编写[简单测试指令](./test/riscv/control_hazard_insts.asm); `is_branch` 高阻态; `pc_reg` 慢一个 cycle => bug13
+
+找不出来, 放弃控制冒险停顿.
+
