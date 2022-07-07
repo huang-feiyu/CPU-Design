@@ -6,11 +6,11 @@ module mini_rv(
     input         rst_n_i
 );
 
+/* BEGIN: ========== variable declaration ========== */
+
 wire clk;
 
 // signals IF generates:
-wire        pc_en;
-
 wire [31:0] if_pc  ;
 wire [31:0] if_pc4 ;
 wire [31:0] if_inst;
@@ -21,6 +21,9 @@ wire [31:0] id_pc4 ;
 wire [31:0] id_inst;
 
 // signals ID generates:
+wire id_re1,id_re2;
+wire [4: 0] id_rs1;
+wire [4: 0] id_rs2;
 wire [31:0] id_rd1;
 wire [31:0] id_rd2;
 wire [31:0] id_ext;
@@ -69,22 +72,51 @@ wire [4: 0] wb_wr   ;
 // signals WB generates
 wire [31:0] wb_wd;
 
+// HAZARD signals
+wire pc_stop, if_id_stop, id_exe_stop;
+
+/* END: ========== variable declaration ========== */
+
+
+/* BEGIN: ========== instantiation ========== */
+
 // instantiate in a specific order
 cpuclk CPU_CLK (
     .clk_in1  (fpga_clk_i),
     .clk_out1 (clk       )
 );
 
+// Hazard detection
+hazard_detector CPU_HZD (
+    .clk_i         (clk        ),
+    .rst_n_i       (rst_n_i    ),
+
+    .id_re1_i      (id_re1     ),
+    .id_re2_i      (id_re2     ),
+    .id_rs1_i      (id_rs1     ),
+    .id_rs2_i      (id_rs2     ),
+    .exe_wr_i      (exe_wr     ),
+    .mem_wr_i      (mem_wr     ),
+    .wb_wr_i       (wb_wr      ),
+    .exe_regWEn_i  (exe_regWEn ),
+    .mem_regWEn_i  (mem_regWEn ),
+    .wb_regWEn_i   (wb_regWEn  ),
+
+    .pc_stop_o     (pc_stop    ),
+    .if_id_stop_o  (if_id_stop ),
+    .id_exe_stop_o (id_exe_stop)
+);
+
 // IF
 if_top CPU_IF (
-    .clk_i    (clk      ),
-    .rst_n_i  (rst_n_i  ),
-    .aluC_i   (wb_aluC  ),
-    .branch_i (wb_branch),
-    .en_i     (pc_en    ),
+    .clk_i    (clk       ),
+    .rst_n_i  (rst_n_i   ),
+    .aluC_i   (exe_aluC  ), // NOTE: after EXE, IMMEDIATELY use aluC & branch
+    .branch_i (exe_branch),
+    .stop_i   (pc_stop   ),
 
-    .pc_o     (if_pc    ),
-    .pc4_o    (if_pc4   )
+    .pc_o     (if_pc     ),
+    .pc4_o    (if_pc4    )
 );
 
 inst_rom CPU_IROM (
@@ -94,16 +126,18 @@ inst_rom CPU_IROM (
 
 // IF/ID
 if_id_reg CPU_IF_ID (
-    .clk_i     (clk    ),
-    .rst_n_i   (rst_n_i),
+    .clk_i     (clk       ),
+    .rst_n_i   (rst_n_i   ),
 
-    .if_pc_i   (if_pc  ),
-    .if_pc4_i  (if_pc4 ),
-    .if_inst_i (if_inst),
+    .stop_i    (if_id_stop),
 
-    .id_pc_o   (id_pc  ),
-    .id_pc4_o  (id_pc4 ),
-    .id_inst_o (id_inst)
+    .if_pc_i   (if_pc     ),
+    .if_pc4_i  (if_pc4    ),
+    .if_inst_i (if_inst   ),
+
+    .id_pc_o   (id_pc     ),
+    .id_pc4_o  (id_pc4    ),
+    .id_inst_o (id_inst   )
 );
 
 // ID
@@ -114,6 +148,10 @@ id_top CPU_ID (
     .wd_i     (wb_wd    ),
     .wr_i     (wb_wr    ),
     .regWEn_i (wb_regWEn),
+    .re1_o    (id_re1   ),
+    .re2_o    (id_re2   ),
+    .rs1_o    (id_rs1   ),
+    .rs2_o    (id_rs2   ),
     .rd1_o    (id_rd1   ),
     .rd2_o    (id_rd2   ),
     .ext_o    (id_ext   ),
@@ -130,38 +168,39 @@ id_top CPU_ID (
 
 // ID/EXE
 id_exe_reg CPU_ID_EXE (
-    .clk_i        (clk      ),
-    .rst_n_i      (rst_n_i  ),
+    .clk_i        (clk        ),
+    .rst_n_i      (rst_n_i    ),
+    .stop_i       (id_exe_stop),
 
-    .id_pc_i      (id_pc    ),
-    .id_pc4_i     (id_pc4   ),
-    .id_pcSel_i   (id_pcSel ),
-    .id_wbSel_i   (id_wbSel ),
-    .id_aluSel_i  (id_aluSel),
-    .id_aSel_i    (id_aSel  ),
-    .id_bSel_i    (id_bSel  ),
-    .id_brSel_i   (id_brSel ),
-    .id_memW_i    (id_memW  ),
-    .id_ext_i     (id_ext   ),
-    .id_rd1_i     (id_rd1   ),
-    .id_rd2_i     (id_rd2   ),
-    .id_wr_i      (id_wr    ),
-    .id_regWEn_i  (id_regWEn),
+    .id_pc_i      (id_pc      ),
+    .id_pc4_i     (id_pc4     ),
+    .id_pcSel_i   (id_pcSel   ),
+    .id_wbSel_i   (id_wbSel   ),
+    .id_aluSel_i  (id_aluSel  ),
+    .id_aSel_i    (id_aSel    ),
+    .id_bSel_i    (id_bSel    ),
+    .id_brSel_i   (id_brSel   ),
+    .id_memW_i    (id_memW    ),
+    .id_ext_i     (id_ext     ),
+    .id_rd1_i     (id_rd1     ),
+    .id_rd2_i     (id_rd2     ),
+    .id_wr_i      (id_wr      ),
+    .id_regWEn_i  (id_regWEn  ),
 
-    .exe_pc_o     (exe_pc    ),
-    .exe_pc4_o    (exe_pc4   ),
-    .exe_pcSel_o  (exe_pcSel ),
-    .exe_wbSel_o  (exe_wbSel ),
-    .exe_aluSel_o (exe_aluSel),
-    .exe_aSel_o   (exe_aSel  ),
-    .exe_bSel_o   (exe_bSel  ),
-    .exe_brSel_o  (exe_brSel ),
-    .exe_memW_o   (exe_memW  ),
-    .exe_ext_o    (exe_ext   ),
-    .exe_rd1_o    (exe_rd1   ),
-    .exe_rd2_o    (exe_rd2   ),
-    .exe_wr_o     (exe_wr    ),
-    .exe_regWEn_o (exe_regWEn)
+    .exe_pc_o     (exe_pc     ),
+    .exe_pc4_o    (exe_pc4    ),
+    .exe_pcSel_o  (exe_pcSel  ),
+    .exe_wbSel_o  (exe_wbSel  ),
+    .exe_aluSel_o (exe_aluSel ),
+    .exe_aSel_o   (exe_aSel   ),
+    .exe_bSel_o   (exe_bSel   ),
+    .exe_brSel_o  (exe_brSel  ),
+    .exe_memW_o   (exe_memW   ),
+    .exe_ext_o    (exe_ext    ),
+    .exe_rd1_o    (exe_rd1    ),
+    .exe_rd2_o    (exe_rd2    ),
+    .exe_wr_o     (exe_wr     ),
+    .exe_regWEn_o (exe_regWEn )
 );
 
 // EXE
@@ -242,5 +281,7 @@ wb_top CPU_WB (
     .pc4_i    (wb_pc4  ),
     .wd_o     (wb_wd   )
 );
+
+/* END: ========== instantiation ========== */
 
 endmodule

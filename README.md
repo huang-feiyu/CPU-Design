@@ -176,7 +176,7 @@ Vivado 无法识别定义的宏.
 
 1. I 型指令
 
-> [I-type](./test/riscv/I_type_insts.asm)
+> [I-type](./test/riscv/NonPipeline/I_type_insts.asm)
 
 <strong>*</strong> `ASel==1` => bug01
 
@@ -191,7 +191,7 @@ assign aSel_o =   (op == OPCODE_SB)
 
 2. R 型指令
 
-> [R-type](./test/riscv/R_type_insts.asm)
+> [R-type](./test/riscv/NonPipeline/R_type_insts.asm)
 
 <strong>*</strong> `sub` & `ALUSel=0` => bug02
 
@@ -218,19 +218,19 @@ endcase
 
 3. MEM 访存指令
 
-> [MEM](./test/riscv/MEM_insts.asm)
+> [MEM](./test/riscv/NonPipeline/MEM_insts.asm)
 
 It is fine.
 
 4. U 型指令
 
-> [U-type](./test/riscv/U_type_insts.asm)
+> [U-type](./test/riscv/NonPipeline/U_type_insts.asm)
 
 It is fine.
 
 5. J 型指令
 
-> [J-type](./test/riscv/J_type_insts.asm)
+> [J-type](./test/riscv/NonPipeline/J_type_insts.asm)
 
 <strong>*</strong> `branch==1` => bug04
 
@@ -245,7 +245,7 @@ end
 
 6. B 型指令
 
-> [B-type](./test/riscv/B_type_insts.asm)
+> [B-type](./test/riscv/NonPipeline/B_type_insts.asm)
 
 ```assembly
 jal loop # jal x1, loop
@@ -381,7 +381,7 @@ end
 
 理想流水线: 假设指令之间没有任何 hazard 存在, 不考虑数据冒险与控制冒险.
 
-0\. 先编写一个**无冒险**测试指令, 写到 IROM 中.
+0\. 先编写一个**无冒险**[测试指令](./test/riscv/no_hazard_insts.asm), 写到 IROM 中.
 
 1\. `if_id_reg.v`
 * `pc`
@@ -456,4 +456,80 @@ id_top CPU_ID (
 >   .wd_i     (wb_wd    ),
 );
 ```
+
+### lab3-2
+
+> [lab3](./lab3): 停顿, 解决数据冒险和控制冒险
+
+0\. 编写存在**三种情形**数据冒险的[测试指令](./test/riscv/data_hazard_insts.asm), 写入 IROM
+
+根据所编写的测试指令, 可以看到:
+* none cycle data wrong: `x1`, `x6` (验证: 未破坏原有理想流水线的功能)
+* 1st cycle data wrong: `x2`, `x3`, `x4`
+* 1st & 2nd cycle data wrong: `x5`
+
+1\. 添加控制信号 (未添加到数据通路与控制信号表中)
+* `re1`: 是否读取 `rs1`<br/>`1`: 读取 `rs1`; `0`: 不读取 `rs1`
+* `re2`: 是否读取 `rs2` (同 `re1`)
+
+2\. `hazard_detector.v`: 实现简单数据冒险的流水线暂停
+* Input Ports
+    * `id_re1`
+    * `id_re2`
+    * `id_rs1`
+    * `id_rs2`
+    * `exe_wr`
+    * `mem_wr`
+    * `wb_wr`
+    * `exe_regWEn`
+    * `mem_regWEn`
+    * `wb_regWEn`
+* Output Ports
+    * `pc_stop`
+    * `if_id_stop`
+    * `id_exe_stop`
+* Control Logic (数据冒险)<br/>保持 PC, IF/ID, ID/EXE 模块不变
+    * A: (REG<sub>ID/EX</sub>.RD == ID.RS1) || (REG<sub>ID/EX</sub>.RD == ID.RS2)<br/> => stop 3 cycles
+    * B: (REG<sub>EX/MEM</sub>.RD == ID.RS1) || (REG<sub>EX/MEM</sub>.RD == ID.RS2)<br/> => stop 2 cycles
+    * C: (REG<sub>MEM/WB</sub>.RD == ID.RS1) || (REG<sub>MEM/WB</sub>.RD == ID.RS2)<br/> => stop 1 cycle
+
+<strong>*</strong> 流水线时序后移错误 => bug12
+
+在指令 1 执行后, 指令 2 没有被阻塞, 指令 3 被阻塞.
+
+```diff
+### 时序后移
+< always @(posedge clk_i or negedge rst_n_i) begin
+---
+> always @(*) begin
+    if (~rst_n_i)        pc_stop_o <= 1'b0;
+    else if (stop_cycle) pc_stop_o <= 1'b1;
+    else                 pc_stop_o <= 1'b0;
+end
+
+### 修改赋值顺序
+always @(posedge rs_id_mem_hazard or posedge rs_id_exe_hazard or posedge rs_id_wb_hazard) begin
+<   if (rs_id_exe_hazard)      stop_cycle <= 3;
+<   else if (rs_id_mem_hazard) stop_cycle <= 2;
+<   else if (rs_id_wb_hazard ) stop_cycle <= 1;
+---
+>   if (rs_id_wb_hazard )      stop_cycle <= 1;
+>   else if (rs_id_mem_hazard) stop_cycle <= 2;
+>   else if (rs_id_exe_hazard) stop_cycle <= 3;
+    else                       stop_cycle <= 0;
+end
+```
+
+3\. `hazard_detector.v`: 实现访存数据冒险的流水线暂停
+
+同样地, 编写存在数据冒险的[测试指令](./test/riscv/lw_data_hazard_insts.asm). 然后, 跑一次仿真. 很容易就通过了.
+
+4\. `hazard_detector.v`: 实现控制冒险的流水线暂停<br/>测试指令使用 [Mixin](./test/riscv/NonPipeline/Mixin_insts.asm), 添加控制信号.
+* Input Ports
+    * `if_branch_i`
+* Control Logic: 只要是分支指令, 就暂停 2 cycles
+
+<strong>*</strong> 答案不正确, 编写[简单测试指令](./test/riscv/control_hazard_insts.asm); `is_branch` 高阻态; `pc_reg` 慢一个 cycle => bug13
+
+找不出来, 放弃控制冒险停顿.
 
