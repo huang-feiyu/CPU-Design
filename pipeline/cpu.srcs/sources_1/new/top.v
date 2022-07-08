@@ -12,11 +12,11 @@ module top(
 wire rst_n_i;
 assign rst_n_i = rst_n;
 
-assign debug_wb_have_inst = wb_pc4 != 0;
-assign debug_wb_pc        = wb_aluC    ;
-assign debug_wb_ena       = wb_regWEn  ;
-assign debug_wb_reg       = wb_wr      ;
-assign debug_wb_value     = wb_wd      ;
+assign debug_wb_have_inst = wb_is_inst;
+assign debug_wb_pc        = wb_pc     ;
+assign debug_wb_ena       = wb_regWEn ;
+assign debug_wb_reg       = wb_wr     ;
+assign debug_wb_value     = wb_wd     ;
 
 /* BEGIN: ========== variable declaration ========== */
 
@@ -60,10 +60,11 @@ wire [4:0] exe_wr    ;
 wire [31:0] exe_aluC  ;
 wire        exe_branch;
 wire        exe_hz_br ;
-assign exe_hz_br = exe_branch && exe_brSel;
+assign exe_hz_br = exe_branch;
 
 // signals MEM gets from EXE:
 wire mem_memW, mem_regWEn, mem_branch;
+wire [31:0] mem_pc   ;
 wire [31:0] mem_pc4  ;
 wire [31:0] mem_rd2  ;
 wire [1: 0] mem_wbSel;
@@ -77,6 +78,7 @@ wire [31:0] mem_rd;
 wire wb_regWEn, wb_branch;
 wire [31:0] wb_aluC ;
 wire [31:0] wb_rd   ;
+wire [31:0] wb_pc   ;
 wire [31:0] wb_pc4  ;
 wire [1: 0] wb_wbSel;
 wire [4: 0] wb_wr   ;
@@ -87,6 +89,8 @@ wire [31:0] wb_wd;
 // HAZARD signals
 wire pc_stop, if_id_stop, id_exe_stop;
 wire if_id_flush, id_exe_flush;
+
+wire id_is_inst, exe_is_inst, mem_is_inst, wb_is_inst;
 
 /* END: ========== variable declaration ========== */
 
@@ -185,7 +189,9 @@ id_top CPU_ID (
     .aSel_o   (id_aSel  ),
     .bSel_o   (id_bSel  ),
     .brSel_o  (id_brSel ),
-    .memW_o   (id_memW  )
+    .memW_o   (id_memW  ),
+
+    .is_inst  (id_is_inst)
 );
 
 // ID/EXE
@@ -224,7 +230,10 @@ id_exe_reg CPU_ID_EXE (
     .exe_rd1_o    (exe_rd1     ),
     .exe_rd2_o    (exe_rd2     ),
     .exe_wr_o     (exe_wr      ),
-    .exe_regWEn_o (exe_regWEn  )
+    .exe_regWEn_o (exe_regWEn  ),
+
+    .id_is_inst   (id_is_inst),
+    .exe_is_inst  (exe_is_inst)
 );
 
 // EXE
@@ -252,6 +261,7 @@ exe_mem_reg CPU_EXE_MEM (
     .exe_regWEn_i (exe_regWEn),
     .exe_wbSel_i  (exe_wbSel ),
     .exe_wr_i     (exe_wr    ),
+    .exe_pc_i     (exe_pc    ),
     .exe_pc4_i    (exe_pc4   ),
     .exe_aluC_i   (exe_aluC  ),
     .exe_branch_i (exe_branch),
@@ -261,10 +271,15 @@ exe_mem_reg CPU_EXE_MEM (
     .mem_regWEn_o (mem_regWEn),
     .mem_wbSel_o  (mem_wbSel ),
     .mem_wr_o     (mem_wr    ),
+    .mem_pc_o     (mem_pc    ),
     .mem_pc4_o    (mem_pc4   ),
     .mem_aluC_o   (mem_aluC  ),
-    .mem_branch_o (mem_branch)
+    .mem_branch_o (mem_branch),
+
+    .exe_is_inst  (exe_is_inst),
+    .mem_is_inst  (mem_is_inst)
 );
+
 
 data_mem dmem(
     .clk (clk           ),
@@ -291,6 +306,7 @@ mem_wb_reg CPU_MEM_WB (
     .mem_branch_i (mem_branch),
     .mem_aluC_i   (mem_aluC  ),
     .mem_rd_i     (mem_rd    ),
+    .mem_pc_i     (mem_pc    ),
     .mem_pc4_i    (mem_pc4   ),
     .mem_wbSel_i  (mem_wbSel ),
     .mem_regWEn_i (mem_regWEn),
@@ -300,9 +316,13 @@ mem_wb_reg CPU_MEM_WB (
     .wb_aluC_o    (wb_aluC   ),
     .wb_rd_o      (wb_rd     ),
     .wb_pc4_o     (wb_pc4    ),
+    .wb_pc_o      (wb_pc     ),
     .wb_wbSel_o   (wb_wbSel  ),
     .wb_regWEn_o  (wb_regWEn ),
-    .wb_wr_o      (wb_wr     )
+    .wb_wr_o      (wb_wr     ),
+
+    .mem_is_inst  (mem_is_inst),
+    .wb_is_inst   (wb_is_inst)
 );
 
 // WB

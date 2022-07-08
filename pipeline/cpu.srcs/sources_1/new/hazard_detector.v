@@ -46,8 +46,8 @@ assign rs_id_wb_hazard  = rs1_id_wb_hazard || rs2_id_wb_hazard;
 
 // stop_cycle: init
 always @(posedge rs_id_mem_hazard or posedge rs_id_exe_hazard or posedge rs_id_wb_hazard) begin
-    if (rs_id_wb_hazard )      stop_cycle = 2;
-    else if (rs_id_mem_hazard) stop_cycle = 3;
+    if (rs_id_wb_hazard )      stop_cycle = 1;
+    else if (rs_id_mem_hazard) stop_cycle = 2;
     else if (rs_id_exe_hazard) stop_cycle = 3;
     else                       stop_cycle = 0;
 end

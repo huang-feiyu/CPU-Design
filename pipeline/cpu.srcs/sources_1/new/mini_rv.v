@@ -50,7 +50,7 @@ wire [4:0] exe_wr    ;
 wire [31:0] exe_aluC  ;
 wire        exe_branch;
 wire        exe_hz_br ;
-assign exe_hz_br = exe_branch && exe_brSel;
+assign exe_hz_br = exe_branch;
 
 // signals MEM gets from EXE:
 wire mem_memW, mem_regWEn, mem_branch;
@@ -79,6 +79,8 @@ wire [31:0] wb_wd;
 // HAZARD signals
 wire pc_stop, if_id_stop, id_exe_stop;
 wire if_id_flush, id_exe_flush;
+
+wire id_is_inst, exe_is_inst, mem_is_inst, wb_is_inst;
 
 /* END: ========== variable declaration ========== */
 
@@ -172,7 +174,9 @@ id_top CPU_ID (
     .aSel_o   (id_aSel  ),
     .bSel_o   (id_bSel  ),
     .brSel_o  (id_brSel ),
-    .memW_o   (id_memW  )
+    .memW_o   (id_memW  ),
+
+    .is_inst  (id_is_inst)
 );
 
 // ID/EXE
@@ -211,7 +215,10 @@ id_exe_reg CPU_ID_EXE (
     .exe_rd1_o    (exe_rd1     ),
     .exe_rd2_o    (exe_rd2     ),
     .exe_wr_o     (exe_wr      ),
-    .exe_regWEn_o (exe_regWEn  )
+    .exe_regWEn_o (exe_regWEn  ),
+
+    .id_is_inst   (id_is_inst),
+    .exe_is_inst  (exe_is_inst)
 );
 
 // EXE
@@ -252,7 +259,10 @@ exe_mem_reg CPU_EXE_MEM (
     .mem_pc_o     (mem_pc    ),
     .mem_pc4_o    (mem_pc4   ),
     .mem_aluC_o   (mem_aluC  ),
-    .mem_branch_o (mem_branch)
+    .mem_branch_o (mem_branch),
+
+    .exe_is_inst  (exe_is_inst),
+    .mem_is_inst  (mem_is_inst)
 );
 
 // MEM
@@ -285,7 +295,10 @@ mem_wb_reg CPU_MEM_WB (
     .wb_pc_o      (wb_pc     ),
     .wb_wbSel_o   (wb_wbSel  ),
     .wb_regWEn_o  (wb_regWEn ),
-    .wb_wr_o      (wb_wr     )
+    .wb_wr_o      (wb_wr     ),
+
+    .mem_is_inst  (mem_is_inst),
+    .wb_is_inst   (wb_is_inst)
 );
 
 // WB

@@ -26,12 +26,15 @@ module id_top(
     output        aSel_o  ,
     output        bSel_o  ,
     output [2 :0] brSel_o ,
-    output        memW_o
+    output        memW_o  ,
+
+    output        is_inst
 );
 
 wire brUn, mem;
 wire [2:0] immSel;
 
+assign is_inst = inst_i[6:0] != 0;
 assign wr_o  = inst_i[11:7 ];
 assign rs1_o = inst_i[19:15];
 assign rs2_o = inst_i[24:20];

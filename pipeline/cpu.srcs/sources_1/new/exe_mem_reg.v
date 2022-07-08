@@ -22,8 +22,16 @@ module exe_mem_reg(
     output reg [31:0] mem_pc_o    ,
     output reg [31:0] mem_pc4_o   ,
     output reg [31:0] mem_aluC_o  ,
-    output reg        mem_branch_o
+    output reg        mem_branch_o,
+
+    input             exe_is_inst,
+    output reg        mem_is_inst
 );
+
+always @(posedge clk_i or negedge rst_n_i) begin
+    if (~rst_n_i) mem_is_inst <= 'b0      ;
+    else          mem_is_inst <= exe_is_inst;
+end
 
 always @(posedge clk_i or negedge rst_n_i) begin
     if (~rst_n_i) mem_rd2_o <= 'b0      ;

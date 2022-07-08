@@ -559,9 +559,9 @@ Q: 是不是说"不需要停顿"了呢?<br/>A: 是的, 只需要将此前错误�
 
 ```diff
 # 1. 撤回 bug14 修改
-# 2. 增加判断语句: iff 跳转指令 && 发生跳转
+# 2. 增加判断语句: iff 跳转指令
 > wire        exe_hz_br ;
-> assign exe_hz_br = exe_branch && exe_brSel;
+> assign exe_hz_br = exe_branch;
 hazard_detector CPU_HZD (
     .clk_i         (clk        ),
     .rst_n_i       (rst_n_i    ),
@@ -569,6 +569,3 @@ hazard_detector CPU_HZD (
 >   .exe_branch_i  (exe_hz_br  ),
 ```
 
----
-
-Ready for trace.

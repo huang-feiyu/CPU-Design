@@ -35,8 +35,18 @@ module id_exe_reg(
     output reg [31:0] exe_rd1_o   ,
     output reg [31:0] exe_rd2_o   ,
     output reg [4 :0] exe_wr_o    ,
-    output reg        exe_regWEn_o
+    output reg        exe_regWEn_o,
+
+    input             id_is_inst,
+    output reg        exe_is_inst
 );
+
+always @(posedge clk_i or negedge rst_n_i) begin
+    if (~rst_n_i)    exe_is_inst <= 'b0     ;
+    else if (flush_i)exe_is_inst <= 'b0     ;
+    else if (stop_i) exe_is_inst <= 'b0;
+    else             exe_is_inst <= id_is_inst;
+end
 
 always @(posedge clk_i or negedge rst_n_i) begin
     if (~rst_n_i)    exe_pc_o <= 'b0     ;

@@ -20,8 +20,16 @@ module mem_wb_reg(
     output reg [31:0] wb_pc4_o    ,
     output reg [1 :0] wb_wbSel_o  ,
     output reg        wb_regWEn_o ,
-    output reg [4 :0] wb_wr_o
+    output reg [4 :0] wb_wr_o     ,
+
+    input             mem_is_inst,
+    output reg        wb_is_inst
 );
+
+always @(posedge clk_i or negedge rst_n_i) begin
+    if (~rst_n_i) wb_is_inst <= 'b0         ;
+    else          wb_is_inst <= mem_is_inst;
+end
 
 always @(posedge clk_i or negedge rst_n_i) begin
     if (~rst_n_i) wb_branch_o <= 'b0         ;

@@ -33,7 +33,7 @@ end
 always @(posedge clk_i or negedge rst_n_i) begin
     if (~rst_n_i)    id_inst_o <= 'b0      ;
     else if (flush_i)id_inst_o <= 'b0      ;
-    else if (stop_i) id_inst_o <= id_inst_o;
+    else if (stop_i) id_inst_o <= if_inst_i;
     else             id_inst_o <= if_inst_i;
 end
 
