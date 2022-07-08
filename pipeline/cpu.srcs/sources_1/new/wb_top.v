@@ -1,4 +1,4 @@
-`timescale 1ns / 1ps
+`include "param.v"
 
 module wb_top(
     input      [1 :0] wbSel_i ,

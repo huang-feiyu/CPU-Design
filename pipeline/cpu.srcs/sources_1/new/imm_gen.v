@@ -1,4 +1,4 @@
-`timescale 1ns / 1ps
+`include "param.v"
 
 module imm_gen(
     input      [2 :0] immSel_i,

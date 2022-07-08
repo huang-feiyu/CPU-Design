@@ -4,6 +4,7 @@ module id_exe_reg(
     input             clk_i       ,
     input             rst_n_i     ,
 
+    input             flush_i     ,
     input             stop_i      ,
 
     input      [31:0] id_pc_i     ,
@@ -34,89 +35,113 @@ module id_exe_reg(
     output reg [31:0] exe_rd1_o   ,
     output reg [31:0] exe_rd2_o   ,
     output reg [4 :0] exe_wr_o    ,
-    output reg        exe_regWEn_o
+    output reg        exe_regWEn_o,
+
+    input             id_is_inst,
+    output reg        exe_is_inst
 );
 
 always @(posedge clk_i or negedge rst_n_i) begin
+    if (~rst_n_i)    exe_is_inst <= 'b0     ;
+    else if (flush_i)exe_is_inst <= 'b0     ;
+    else if (stop_i) exe_is_inst <= 'b0     ;
+    else             exe_is_inst <= id_is_inst;
+end
+
+always @(posedge clk_i or negedge rst_n_i) begin
     if (~rst_n_i)    exe_pc_o <= 'b0     ;
+    else if (flush_i)exe_pc_o <= 'b0     ;
     else if (stop_i) exe_pc_o <= exe_pc_o;
     else             exe_pc_o <= id_pc_i ;
 end
 
 always @(posedge clk_i or negedge rst_n_i) begin
     if (~rst_n_i)    exe_pc4_o <= 'b0      ;
+    else if (flush_i)exe_pc4_o <= 'b0      ;
     else if (stop_i) exe_pc4_o <= exe_pc4_o;
     else             exe_pc4_o <= id_pc4_i ;
 end
 
 always @(posedge clk_i or negedge rst_n_i) begin
     if (~rst_n_i)    exe_pcSel_o <= 'b0        ;
+    else if (flush_i)exe_pcSel_o <= 'b0        ;
     else if (stop_i) exe_pcSel_o <= exe_pcSel_o;
     else             exe_pcSel_o <= id_pcSel_i ;
 end
 
 always @(posedge clk_i or negedge rst_n_i) begin
     if (~rst_n_i)    exe_wbSel_o <= 'b0        ;
+    else if (flush_i)exe_wbSel_o <= 'b0        ;
     else if (stop_i) exe_wbSel_o <= exe_wbSel_o;
     else             exe_wbSel_o <= id_wbSel_i ;
 end
 
 always @(posedge clk_i or negedge rst_n_i) begin
     if (~rst_n_i)    exe_aluSel_o <= 'b0         ;
+    else if (flush_i)exe_aluSel_o <= 'b0         ;
     else if (stop_i) exe_aluSel_o <= exe_aluSel_o;
     else             exe_aluSel_o <= id_aluSel_i ;
 end
 
 always @(posedge clk_i or negedge rst_n_i) begin
     if (~rst_n_i)    exe_aSel_o <= 'b0       ;
+    else if (flush_i)exe_aSel_o <= 'b0       ;
     else if (stop_i) exe_aSel_o <= exe_aSel_o;
     else             exe_aSel_o <= id_aSel_i ;
 end
 
 always @(posedge clk_i or negedge rst_n_i) begin
     if (~rst_n_i)    exe_bSel_o <= 'b0       ;
+    else if (flush_i)exe_bSel_o <= 'b0       ;
     else if (stop_i) exe_bSel_o <= exe_bSel_o;
     else             exe_bSel_o <= id_bSel_i ;
 end
 
 always @(posedge clk_i or negedge rst_n_i) begin
     if (~rst_n_i)    exe_brSel_o <= 'b0        ;
+    else if (flush_i)exe_brSel_o <= 'b0        ;
     else if (stop_i) exe_brSel_o <= exe_brSel_o;
     else             exe_brSel_o <= id_brSel_i ;
 end
 
 always @(posedge clk_i or negedge rst_n_i) begin
     if (~rst_n_i)    exe_memW_o <= 'b0       ;
+    else if (flush_i)exe_memW_o <= 'b0       ;
     else if (stop_i) exe_memW_o <= exe_memW_o;
     else             exe_memW_o <= id_memW_i ;
 end
 
 always @(posedge clk_i or negedge rst_n_i) begin
     if (~rst_n_i)    exe_ext_o <= 'b0      ;
+    else if (flush_i)exe_ext_o <= 'b0      ;
     else if (stop_i) exe_ext_o <= exe_ext_o;
     else             exe_ext_o <= id_ext_i ;
 end
 
 always @(posedge clk_i or negedge rst_n_i) begin
     if (~rst_n_i)    exe_rd1_o <= 'b0      ;
+    else if (flush_i)exe_rd1_o <= 'b0      ;
     else if (stop_i) exe_rd1_o <= exe_rd1_o;
     else             exe_rd1_o <= id_rd1_i ;
 end
 
 always @(posedge clk_i or negedge rst_n_i) begin
     if (~rst_n_i)    exe_rd2_o <= 'b0      ;
+    else if (flush_i)exe_rd2_o <= 'b0      ;
     else if (stop_i) exe_rd2_o <= exe_rd2_o;
     else             exe_rd2_o <= id_rd2_i ;
 end
 
 always @(posedge clk_i or negedge rst_n_i) begin
     if (~rst_n_i)    exe_wr_o <= 'b0     ;
+    else if (flush_i)exe_wr_o <= 'b0     ;
     else if (stop_i) exe_wr_o <= exe_wr_o;
     else             exe_wr_o <= id_wr_i ;
 end
 
 always @(posedge clk_i or negedge rst_n_i) begin
     if (~rst_n_i)    exe_regWEn_o <= 'b0         ;
+    else if (flush_i)exe_regWEn_o <= 'b0         ;
     else if (stop_i) exe_regWEn_o <= exe_regWEn_o;
     else             exe_regWEn_o <= id_regWEn_i ;
 end

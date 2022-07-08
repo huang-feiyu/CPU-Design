@@ -1,4 +1,4 @@
-`timescale 1ns / 1ps
+`include "param.v"
 
 module exe_top(
     input  [31:0] rd1_i   ,

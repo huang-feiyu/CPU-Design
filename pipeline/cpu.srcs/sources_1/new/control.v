@@ -1,4 +1,4 @@
-`timescale 1ns / 1ps
+`include "param.v"
 
 module control #(
     parameter OPCODE_R      = 7'b0110011,
