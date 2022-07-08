@@ -3,8 +3,19 @@
 // CPU
 module mini_rv(
     input         fpga_clk_i,
-    input         rst_n_i
+    input         rst_n_i,
+    output        debug_wb_have_inst,
+    output [31:0] debug_wb_pc       ,
+    output        debug_wb_ena      ,
+    output [4: 0] debug_wb_reg      ,
+    output [31:0] debug_wb_value
 );
+
+assign debug_wb_have_inst = wb_is_inst;
+assign debug_wb_pc        = wb_pc     ;
+assign debug_wb_ena       = wb_regWEn ;
+assign debug_wb_reg       = wb_wr     ;
+assign debug_wb_value     = wb_wd     ;
 
 /* BEGIN: ========== variable declaration ========== */
 
