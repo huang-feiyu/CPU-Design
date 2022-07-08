@@ -526,10 +526,45 @@ end
 
 4\. `hazard_detector.v`: 实现控制冒险的流水线暂停<br/>测试指令使用 [Mixin](./test/riscv/NonPipeline/Mixin_insts.asm), 添加控制信号.
 * Input Ports
-    * `if_branch_i`
-* Control Logic: 只要是分支指令, 就暂停 2 cycles
+    * `exe_brSel`
+* Output Ports
+    * `if_id_flush`
+    * `id_exe_flush`
 
 <strong>*</strong> 答案不正确, 编写[简单测试指令](./test/riscv/control_hazard_insts.asm); `is_branch` 高阻态; `pc_reg` 慢一个 cycle => bug13
 
-找不出来, 放弃控制冒险停顿.
+<s>找不出来, 放弃控制冒险停顿.</s>
 
+由于存在数据冒险与控制冒险的组合, 所以不能在 IF 阶段判断是否为 branch 指令. 要做的是: 在 EXE 阶段判断是否为 branch 指令; 也就要清空下一条指令与下下条指令所产生的寄存器数据: ID/EXE, IF/ID.
+
+Q: 是不是说"不需要停顿"了呢?<br/>A: 是的, 只需要将此前错误取出的后两条指令清零即可. They have done nothing.
+
+<img src="https://user-images.githubusercontent.com/70138429/177804521-3b2579c1-233d-4be5-a6d0-daa4c6c19e7a.png" height="200px">
+
+<strong>*</strong> 同时存在控制冒险与数据冒险时, 控制冒险的 `flush` 信号没有上升 => bug14
+
+```diff
+< input         exe_branch_i,
+---
+> input  [2:0]  exe_branch_i,
+
+< assign if_id_flush_o = exe_branch_i;
+< assign id_exe_flush_o = exe_branch_i;
+---
+> assign if_id_flush_o = exe_branch_i != 'b0;
+> assign id_exe_flush_o = exe_branch_i != 'b0;
+```
+
+<strong>*</strong> 分支信号总是清除后两条指令 => bug15
+
+```diff
+# 1. 撤回 bug14 修改
+# 2. 增加判断语句: iff 跳转指令 && 发生跳转
+> wire        exe_hz_br ;
+> assign exe_hz_br = exe_branch && exe_brSel;
+hazard_detector CPU_HZD (
+    .clk_i         (clk        ),
+    .rst_n_i       (rst_n_i    ),
+<   .exe_branch_i  (exe_branch ),
+>   .exe_branch_i  (exe_hz_br  ),
+```

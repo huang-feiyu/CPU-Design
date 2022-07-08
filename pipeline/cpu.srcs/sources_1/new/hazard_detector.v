@@ -1,22 +1,25 @@
 `timescale 1ns / 1ps
 
 module hazard_detector(
-    input         clk_i       ,
-    input         rst_n_i     ,
+    input         clk_i         ,
+    input         rst_n_i       ,
 
-    input         id_re1_i    ,
-    input         id_re2_i    ,
-    input  [4 :0] id_rs1_i    ,
-    input  [4 :0] id_rs2_i    ,
-    input  [4 :0] exe_wr_i    ,
-    input  [4 :0] mem_wr_i    ,
-    input  [4 :0] wb_wr_i     ,
-    input         exe_regWEn_i,
-    input         mem_regWEn_i,
-    input         wb_regWEn_i ,
+    input         exe_branch_i  ,
+    input         id_re1_i      ,
+    input         id_re2_i      ,
+    input  [4 :0] id_rs1_i      ,
+    input  [4 :0] id_rs2_i      ,
+    input  [4 :0] exe_wr_i      ,
+    input  [4 :0] mem_wr_i      ,
+    input  [4 :0] wb_wr_i       ,
+    input         exe_regWEn_i  ,
+    input         mem_regWEn_i  ,
+    input         wb_regWEn_i   ,
 
-    output reg    pc_stop_o   ,
-    output reg    if_id_stop_o,
+    output        if_id_flush_o ,
+    output        id_exe_flush_o,
+    output reg    pc_stop_o     ,
+    output reg    if_id_stop_o  ,
     output reg    id_exe_stop_o
 );
 
@@ -43,8 +46,8 @@ assign rs_id_wb_hazard  = rs1_id_wb_hazard || rs2_id_wb_hazard;
 
 // stop_cycle: init
 always @(posedge rs_id_mem_hazard or posedge rs_id_exe_hazard or posedge rs_id_wb_hazard) begin
-    if (rs_id_wb_hazard )      stop_cycle <= 1;
-    else if (rs_id_mem_hazard) stop_cycle <= 2;
+    if (rs_id_wb_hazard )      stop_cycle <= 2;
+    else if (rs_id_mem_hazard) stop_cycle <= 3;
     else if (rs_id_exe_hazard) stop_cycle <= 3;
     else                       stop_cycle <= 0;
 end
@@ -76,5 +79,8 @@ always @(*) begin
     else if (stop_cycle) id_exe_stop_o <= 1'b1;
     else                 id_exe_stop_o <= 1'b0;
 end
+
+assign if_id_flush_o  = exe_branch_i;
+assign id_exe_flush_o = exe_branch_i;
 
 endmodule
