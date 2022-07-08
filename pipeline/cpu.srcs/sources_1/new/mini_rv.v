@@ -54,6 +54,7 @@ assign exe_hz_br = exe_branch && exe_brSel;
 
 // signals MEM gets from EXE:
 wire mem_memW, mem_regWEn, mem_branch;
+wire [31:0] mem_pc   ;
 wire [31:0] mem_pc4  ;
 wire [31:0] mem_rd2  ;
 wire [1: 0] mem_wbSel;
@@ -67,6 +68,7 @@ wire [31:0] mem_rd;
 wire wb_regWEn, wb_branch;
 wire [31:0] wb_aluC ;
 wire [31:0] wb_rd   ;
+wire [31:0] wb_pc   ;
 wire [31:0] wb_pc4  ;
 wire [1: 0] wb_wbSel;
 wire [4: 0] wb_wr   ;
@@ -237,6 +239,7 @@ exe_mem_reg CPU_EXE_MEM (
     .exe_regWEn_i (exe_regWEn),
     .exe_wbSel_i  (exe_wbSel ),
     .exe_wr_i     (exe_wr    ),
+    .exe_pc_i     (exe_pc    ),
     .exe_pc4_i    (exe_pc4   ),
     .exe_aluC_i   (exe_aluC  ),
     .exe_branch_i (exe_branch),
@@ -246,6 +249,7 @@ exe_mem_reg CPU_EXE_MEM (
     .mem_regWEn_o (mem_regWEn),
     .mem_wbSel_o  (mem_wbSel ),
     .mem_wr_o     (mem_wr    ),
+    .mem_pc_o     (mem_pc    ),
     .mem_pc4_o    (mem_pc4   ),
     .mem_aluC_o   (mem_aluC  ),
     .mem_branch_o (mem_branch)
@@ -268,6 +272,7 @@ mem_wb_reg CPU_MEM_WB (
     .mem_branch_i (mem_branch),
     .mem_aluC_i   (mem_aluC  ),
     .mem_rd_i     (mem_rd    ),
+    .mem_pc_i     (mem_pc    ),
     .mem_pc4_i    (mem_pc4   ),
     .mem_wbSel_i  (mem_wbSel ),
     .mem_regWEn_i (mem_regWEn),
@@ -277,6 +282,7 @@ mem_wb_reg CPU_MEM_WB (
     .wb_aluC_o    (wb_aluC   ),
     .wb_rd_o      (wb_rd     ),
     .wb_pc4_o     (wb_pc4    ),
+    .wb_pc_o      (wb_pc     ),
     .wb_wbSel_o   (wb_wbSel  ),
     .wb_regWEn_o  (wb_regWEn ),
     .wb_wr_o      (wb_wr     )

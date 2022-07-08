@@ -1,4 +1,4 @@
-`timescale 1ns / 1ps
+`include "param.v"
 
 module comp(
     input  [31:0] rd1_i ,

@@ -9,6 +9,7 @@ module exe_mem_reg(
     input             exe_regWEn_i,
     input      [1 :0] exe_wbSel_i ,
     input      [4 :0] exe_wr_i    ,
+    input      [31:0] exe_pc_i    ,
     input      [31:0] exe_pc4_i   ,
     input      [31:0] exe_aluC_i  ,
     input             exe_branch_i,
@@ -18,6 +19,7 @@ module exe_mem_reg(
     output reg        mem_regWEn_o,
     output reg [1 :0] mem_wbSel_o ,
     output reg [4 :0] mem_wr_o    ,
+    output reg [31:0] mem_pc_o    ,
     output reg [31:0] mem_pc4_o   ,
     output reg [31:0] mem_aluC_o  ,
     output reg        mem_branch_o
@@ -46,6 +48,11 @@ end
 always @(posedge clk_i or negedge rst_n_i) begin
     if (~rst_n_i) mem_wr_o <= 'b0     ;
     else          mem_wr_o <= exe_wr_i;
+end
+
+always @(posedge clk_i or negedge rst_n_i) begin
+    if (~rst_n_i) mem_pc_o <= 'b0     ;
+    else          mem_pc_o <= exe_pc_i;
 end
 
 always @(posedge clk_i or negedge rst_n_i) begin

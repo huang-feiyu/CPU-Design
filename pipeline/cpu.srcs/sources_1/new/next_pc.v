@@ -1,4 +1,4 @@
-`timescale 1ns / 1ps
+`include "param.v"
 
 module next_pc(
     input      [31:0] pc_i    ,

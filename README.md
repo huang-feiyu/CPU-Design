@@ -568,3 +568,7 @@ hazard_detector CPU_HZD (
 <   .exe_branch_i  (exe_branch ),
 >   .exe_branch_i  (exe_hz_br  ),
 ```
+
+---
+
+Ready for trace.

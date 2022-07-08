@@ -46,38 +46,38 @@ assign rs_id_wb_hazard  = rs1_id_wb_hazard || rs2_id_wb_hazard;
 
 // stop_cycle: init
 always @(posedge rs_id_mem_hazard or posedge rs_id_exe_hazard or posedge rs_id_wb_hazard) begin
-    if (rs_id_wb_hazard )      stop_cycle <= 2;
-    else if (rs_id_mem_hazard) stop_cycle <= 3;
-    else if (rs_id_exe_hazard) stop_cycle <= 3;
-    else                       stop_cycle <= 0;
+    if (rs_id_wb_hazard )      stop_cycle = 2;
+    else if (rs_id_mem_hazard) stop_cycle = 3;
+    else if (rs_id_exe_hazard) stop_cycle = 3;
+    else                       stop_cycle = 0;
 end
 
 // stop_cycle: --
 always @(posedge clk_i or negedge rst_n_i) begin
-    if (~rst_n_i)        stop_cycle <= 0             ;
-    else if (stop_cycle) stop_cycle <= stop_cycle - 1;
-    else                 stop_cycle <= stop_cycle    ;
+    if (~rst_n_i)        stop_cycle = 0             ;
+    else if (stop_cycle) stop_cycle = stop_cycle - 1;
+    else                 stop_cycle = stop_cycle    ;
 end
 
 // pc_stop_o
 always @(*) begin
-    if (~rst_n_i)        pc_stop_o <= 1'b0;
-    else if (stop_cycle) pc_stop_o <= 1'b1;
-    else                 pc_stop_o <= 1'b0;
+    if (~rst_n_i)        pc_stop_o = 1'b0;
+    else if (stop_cycle) pc_stop_o = 1'b1;
+    else                 pc_stop_o = 1'b0;
 end
 
 // if_id_stop_o
 always @(*) begin
-    if (~rst_n_i)        if_id_stop_o <= 1'b0;
-    else if (stop_cycle) if_id_stop_o <= 1'b1;
-    else                 if_id_stop_o <= 1'b0;
+    if (~rst_n_i)        if_id_stop_o = 1'b0;
+    else if (stop_cycle) if_id_stop_o = 1'b1;
+    else                 if_id_stop_o = 1'b0;
 end
 
 // id_exe_stop_o
 always @(*) begin
-    if (~rst_n_i)        id_exe_stop_o <= 1'b0;
-    else if (stop_cycle) id_exe_stop_o <= 1'b1;
-    else                 id_exe_stop_o <= 1'b0;
+    if (~rst_n_i)        id_exe_stop_o = 1'b0;
+    else if (stop_cycle) id_exe_stop_o = 1'b1;
+    else                 id_exe_stop_o = 1'b0;
 end
 
 assign if_id_flush_o  = exe_branch_i;
