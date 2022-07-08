@@ -44,7 +44,7 @@ module id_exe_reg(
 always @(posedge clk_i or negedge rst_n_i) begin
     if (~rst_n_i)    exe_is_inst <= 'b0     ;
     else if (flush_i)exe_is_inst <= 'b0     ;
-    else if (stop_i) exe_is_inst <= 'b0;
+    else if (stop_i) exe_is_inst <= 'b0     ;
     else             exe_is_inst <= id_is_inst;
 end
 
