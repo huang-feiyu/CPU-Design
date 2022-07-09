@@ -589,8 +589,7 @@ hazard_detector CPU_HZD (
         * C: 在同时写入和读取的情况下, 对于读取数据进行判断 `rs==wr && regWEn && wr!=0`, 是否**直接**读取写入的数据 `wd`. (另一种形式的前递)
 * 控制冒险: 假设分支不发生, 如果发生分支跳转, 则插入两个 bubble; 也就是在 `hazard_detector` 中, 传入 EXE 阶段的 `branch`, 如果有控制冒险, 则清空 IF/ID, ID/EXE 以达到插入两个 bubble 的目的.
 
-<details><summary>作图如下:</summary>
-<img src="https://user-images.githubusercontent.com/70138429/178104658-40a76f33-f450-40af-90cf-519bc6e0177c.png"></details>
+<details><summary>作图如下:</summary><img src="https://user-images.githubusercontent.com/70138429/178110145-949f0a0a-ab6b-4b4a-9582-8a628a047587.png"></details>
 
 
 第一次差分测试
