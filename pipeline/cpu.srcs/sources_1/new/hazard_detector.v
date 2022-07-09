@@ -1,89 +1,84 @@
-`timescale 1ns / 1ps
+`include "param.v"
 
 module hazard_detector(
     input         clk_i         ,
     input         rst_n_i       ,
 
     input         exe_branch_i  ,
-    input         id_re1_i      ,
-    input         id_re2_i      ,
-    input  [4 :0] id_rs1_i      ,
-    input  [4 :0] id_rs2_i      ,
-    input  [4 :0] exe_wr_i      ,
+    input  [4 :0] exe_rs1_i     ,
+    input  [4 :0] exe_rs2_i     ,
+    input  [31:0] exe_rd1_i     ,
+    input  [31:0] exe_rd2_i     ,
     input  [4 :0] mem_wr_i      ,
     input  [4 :0] wb_wr_i       ,
-    input         exe_regWEn_i  ,
     input         mem_regWEn_i  ,
     input         wb_regWEn_i   ,
 
-    output        if_id_flush_o ,
-    output        id_exe_flush_o,
+    input  [1 :0] mem_wbSel_i   ,
+    input  [31:0] mem_wd_i      ,
+    input  [31:0] wb_wd_i       ,
+
+    output reg [31:0] rs1_f_o   ,
+    output reg [31:0] rs2_f_o   ,
+
+    output reg    if_id_flush_o ,
+    output reg    id_exe_flush_o,
     output reg    pc_stop_o     ,
-    output reg    if_id_stop_o  ,
-    output reg    id_exe_stop_o
+    output reg    if_id_stop_o
 );
 
-wire rs1_id_exe_hazard, rs2_id_exe_hazard, rs_id_exe_hazard;
-wire rs1_id_mem_hazard, rs2_id_mem_hazard, rs_id_mem_hazard;
-wire rs1_id_wb_hazard , rs2_id_wb_hazard , rs_id_wb_hazard ;
+wire rs1_exe_mem_hazard, rs2_exe_mem_hazard;
+wire rs1_exe_wb_hazard , rs2_exe_wb_hazard ;
 
-reg [1:0] stop_cycle;
+// situation A: EXE & MEM hazard
+assign rs1_exe_mem_hazard = (exe_rs1_i == mem_wr_i) && mem_regWEn_i && mem_wr_i != 0;
+assign rs2_exe_mem_hazard = (exe_rs2_i == mem_wr_i) && mem_regWEn_i && mem_wr_i != 0;
 
-// situation A: ID & EXE hazard
-assign rs1_id_exe_hazard = (exe_wr_i == id_rs1_i) && exe_regWEn_i && id_re1_i && exe_wr_i != 0;
-assign rs2_id_exe_hazard = (exe_wr_i == id_rs2_i) && exe_regWEn_i && id_re2_i && exe_wr_i != 0;
-assign rs_id_exe_hazard  = rs1_id_exe_hazard || rs2_id_exe_hazard;
+// situation B: EXE & WB hazard
+assign rs1_exe_wb_hazard = (exe_rs1_i == wb_wr_i) && wb_regWEn_i && wb_wr_i != 0;
+assign rs2_exe_wb_hazard = (exe_rs2_i == wb_wr_i) && wb_regWEn_i && wb_wr_i != 0;
 
-// situation B: ID & MEM hazard
-assign rs1_id_mem_hazard = (mem_wr_i == id_rs1_i) && mem_regWEn_i && id_re1_i && mem_wr_i != 0;
-assign rs2_id_mem_hazard = (mem_wr_i == id_rs2_i) && mem_regWEn_i && id_re2_i && mem_wr_i != 0;
-assign rs_id_mem_hazard  = rs1_id_mem_hazard || rs2_id_mem_hazard;
-
-// situation C: ID & WB hazard
-assign rs1_id_wb_hazard = (wb_wr_i == id_rs1_i) && wb_regWEn_i && id_re1_i && wb_wr_i != 0;
-assign rs2_id_wb_hazard = (wb_wr_i == id_rs2_i) && wb_regWEn_i && id_re2_i && wb_wr_i != 0;
-assign rs_id_wb_hazard  = rs1_id_wb_hazard || rs2_id_wb_hazard;
-
-// stop_cycle: init
-always @(posedge rs_id_mem_hazard or posedge rs_id_exe_hazard or posedge rs_id_wb_hazard) begin
-    if (rs_id_wb_hazard )      stop_cycle = 1;
-    else if (rs_id_mem_hazard) stop_cycle = 2;
-    else if (rs_id_exe_hazard) stop_cycle = 3;
-    else                       stop_cycle = 0;
+// rs1: forward data
+always @(*) begin
+    if (rs1_exe_mem_hazard)     rs1_f_o = mem_wd_i ;
+    else if (rs1_exe_wb_hazard) rs1_f_o = wb_wd_i  ;
+    else                        rs1_f_o = exe_rd1_i;
 end
 
-// stop_cycle: --
-always @(posedge clk_i or negedge rst_n_i) begin
-    if (~rst_n_i)        stop_cycle = 0             ;
-    else if (stop_cycle) stop_cycle = stop_cycle - 1;
-    else                 stop_cycle = stop_cycle    ;
+// rs2: forward data
+always @(*) begin
+    if (rs2_exe_mem_hazard)     rs2_f_o = mem_wd_i ;
+    else if (rs2_exe_wb_hazard) rs2_f_o = wb_wd_i  ;
+    else                        rs2_f_o = exe_rd2_i;
 end
+
+// must stop
+wire load_exe_hazard;
+assign load_exe_hazard = (rs1_exe_mem_hazard || rs2_exe_mem_hazard) && mem_wbSel_i == `WBSEL_MEM;
 
 // pc_stop_o
 always @(*) begin
-    if (~rst_n_i)        pc_stop_o = 1'b0;
-    else if (exe_branch_i) pc_stop_o = 1'b0;
-    else if (stop_cycle) pc_stop_o = 1'b1;
-    else                 pc_stop_o = 1'b0;
+    if (load_exe_hazard) pc_stop_o = 1;
+    else                 pc_stop_o = 0;
 end
 
 // if_id_stop_o
 always @(*) begin
-    if (~rst_n_i)        if_id_stop_o = 1'b0;
-    else if (exe_branch_i) if_id_stop_o = 1'b0;
-    else if (stop_cycle) if_id_stop_o = 1'b1;
-    else                 if_id_stop_o = 1'b0;
+    if (load_exe_hazard) if_id_stop_o = 1;
+    else                 if_id_stop_o = 0;
 end
 
-// id_exe_stop_o
+// if_id_flush_o
 always @(*) begin
-    if (~rst_n_i)        id_exe_stop_o = 1'b0;
-    else if (exe_branch_i) id_exe_stop_o = 1'b0;
-    else if (stop_cycle) id_exe_stop_o = 1'b1;
-    else                 id_exe_stop_o = 1'b0;
+    if (exe_branch_i) if_id_flush_o = 1;
+    else              if_id_flush_o = 0;
 end
 
-assign if_id_flush_o  = exe_branch_i;
-assign id_exe_flush_o = exe_branch_i;
+// id_exe_flush_o
+always @(*) begin
+    if (load_exe_hazard)   id_exe_flush_o = 1;
+    else if (exe_branch_i) id_exe_flush_o = 1;
+    else                   id_exe_flush_o = 0;
+end
 
 endmodule

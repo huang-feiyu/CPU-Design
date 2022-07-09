@@ -569,8 +569,79 @@ hazard_detector CPU_HZD (
 >   .exe_branch_i  (exe_hz_br  ),
 ```
 
----
-
 找了两天半的 bug, 发现: 由于早期设计问题, 修改的话会出现矛盾; 除非从头再来, 虽然还有一个星期的时间, 但是干点别的不好吗?
 
-到此为止吧, 由于早期设计问题以及有点懒, 我选择放弃这个作业.
+到此为止吧, 由于早期设计问题以及有点懒, 我选择放弃<s>这个作业.</s> 停顿/［垃圾］指导书.
+
+### lab3-3
+
+> [lab3](./lab3): 数据前递, 解决数据冒险和控制冒险
+
+根据[《计算机组成与设计》](https://book.douban.com/subject/26604008/), 重新设计数据通路. 基本思路为:
+* 数据冒险: 在 ID/EXE 后半阶段检测冒险, 将前递的数据传送到 `exe_top`/`alu` 中; 也就是在 `hazard_detector` 判断并输出 ALU 的输入 `rs1_f`, `rs2_f`.
+    * `rs_f` 三种选择: `rd`, `MEM.wd`, `WB.wd`
+    * load 停顿控制: PC, IF/ID 停顿; ID/EXE 清空
+    * 冒险类型
+        * 1A: ID/EX.rs1 = EX/MEM.wR (其他省略)
+        * 2A: ID/EX.rs2 = EX/MEM.wR
+        * 1B: ID/EX.rs1 = MEM/WB.wR
+        * 2B: ID/EX.rs2 = MEM/WB.wR
+        * C: 在同时写入和读取的情况下, 对于读取数据进行判断 `rs==wr && regWEn && wr!=0`, 是否**直接**读取写入的数据 `wd`. (另一种形式的前递)
+* 控制冒险: 假设分支不发生, 如果发生分支跳转, 则插入两个 bubble; 也就是在 `hazard_detector` 中, 传入 EXE 阶段的 `branch`, 如果有控制冒险, 则清空 IF/ID, ID/EXE 以达到插入两个 bubble 的目的.
+
+<details><summary>作图如下:</summary><img src="https://user-images.githubusercontent.com/70138429/178110145-949f0a0a-ab6b-4b4a-9582-8a628a047587.png"></details>
+
+
+第一次差分测试
+
+<strong>*</strong> 写入 `x0` 错误 => bug16
+
+```diff
+< assign rd1_o = regWEn_i && wr_i == rs1_i ? wd_i : regfile[rs1_i];
+< assign rd2_o = regWEn_i && wr_i == rs2_i ? wd_i : regfile[rs2_i];
+---
+> assign rd1_o = regWEn_i && wr_i == rs1_i && wr_i != 0 ? wd_i : regfile[rs1_i];
+> assign rd2_o = regWEn_i && wr_i == rs2_i && wr_i != 0 ? wd_i : regfile[rs2_i];
+```
+
+第二次差分测试
+
+```
+Passed Tests:
+add, addi, and, andi, beq, bge, blt, bne, jal, jalr, lui, or, ori, simple, sll, slli, sra, srai, srl, srli, sub, xor, xori
+Failed Tests:
+auipc, bgeu, bltu, lb, lbu, lh, lhu, lw, sb, sh, slt, slti, sltiu, sltu, start, sw
+```
+
+两条指令未通过 `lw`, `sw`.
+
+<strong>*</strong> load 暂停时写入数据出错, 寄存器出错 => bug17
+
+```diff
+// mem MUX
+wb_top CPU_MEM_MUX (
+    .wbSel_i  (mem_wbSel),
+    .aluC_i   (mem_aluC ),
+<   .mem_rd_i (mem_aluC ),
+---
+>   .mem_rd_i (mem_rd   ),
+    .pc4_i    (mem_pc4  ),
+    .wd_o     (mem_wd   )
+);
+```
+
+第三次差分测试
+
+仅 `sw` 未通过.
+
+<strong>*</strong> `wb_top` 中 `mem_rd_i` 恒为零, 意即: `sw` 无法读出数据 => bug18
+
+```diff
+exe_mem_reg CPU_EXE_MEM (
+    .clk_i        (clk       ),
+    .rst_n_i      (rst_n_i   ),
+<   .exe_rd2_i    (exe_rd2   ),
+>   .exe_rd2_i    (rs2_forward),
+```
+
+至此, Trace 测试全部通过.
