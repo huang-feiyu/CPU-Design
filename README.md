@@ -636,3 +636,13 @@ wb_top CPU_MEM_MUX (
 仅 `sw` 未通过.
 
 <strong>*</strong> `wb_top` 中 `mem_rd_i` 恒为零, 意即: `sw` 无法读出数据 => bug18
+
+```diff
+exe_mem_reg CPU_EXE_MEM (
+    .clk_i        (clk       ),
+    .rst_n_i      (rst_n_i   ),
+<   .exe_rd2_i    (exe_rd2   ),
+>   .exe_rd2_i    (rs2_forward),
+```
+
+至此, Trace 测试全部通过.

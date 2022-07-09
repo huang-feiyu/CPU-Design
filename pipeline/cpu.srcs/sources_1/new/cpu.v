@@ -1,4 +1,4 @@
-`timescale 1ns / 1ps
+`include "param.v"
 module cpu(
     input         clk,
     input         rst_n_i,
@@ -90,6 +90,7 @@ wire [31:0] wb_pc4  ;
 wire [1: 0] wb_wbSel;
 wire [4: 0] wb_wr   ;
 wire        wb_memW ;
+wire [31:0] wb_rd2  ;
 
 // signals WB generates
 wire [31:0] wb_wd;
@@ -260,7 +261,7 @@ exe_mem_reg CPU_EXE_MEM (
     .clk_i        (clk       ),
     .rst_n_i      (rst_n_i   ),
 
-    .exe_rd2_i    (exe_rd2   ),
+    .exe_rd2_i    (rs2_forward),
     .exe_memW_i   (exe_memW  ),
     .exe_regWEn_i (exe_regWEn),
     .exe_wbSel_i  (exe_wbSel ),
@@ -315,9 +316,6 @@ mem_wb_reg CPU_MEM_WB (
     .wb_wbSel_o   (wb_wbSel  ),
     .wb_regWEn_o  (wb_regWEn ),
     .wb_wr_o      (wb_wr     ),
-
-    .mem_memW_i   (mem_memW  ),
-    .wb_memW_o    (wb_memW   ),
 
     .mem_is_inst  (mem_is_inst),
     .wb_is_inst   (wb_is_inst)
