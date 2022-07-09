@@ -592,3 +592,24 @@ hazard_detector CPU_HZD (
 <details><summary>作图如下:</summary>
 <img src="https://user-images.githubusercontent.com/70138429/178104658-40a76f33-f450-40af-90cf-519bc6e0177c.png"></details>
 
+
+1. 第一次差分测试
+
+<strong>*</strong> 写入 `x0` 错误 => bug16
+
+```diff
+< assign rd1_o = regWEn_i && wr_i == rs1_i ? wd_i : regfile[rs1_i];
+< assign rd2_o = regWEn_i && wr_i == rs2_i ? wd_i : regfile[rs2_i];
+---
+> assign rd1_o = regWEn_i && wr_i == rs1_i && wr_i != 0 ? wd_i : regfile[rs1_i];
+> assign rd2_o = regWEn_i && wr_i == rs2_i && wr_i != 0 ? wd_i : regfile[rs2_i];
+```
+
+2. 第二次差分测试
+
+```
+Passed Tests:
+add, addi, and, andi, beq, bge, blt, bne, jal, jalr, lui, or, ori, simple, sll, slli, sra, srai, srl, srli, sub, xor, xori
+Failed Tests:
+auipc, bgeu, bltu, lb, lbu, lh, lhu, lw, sb, sh, slt, slti, sltiu, sltu, start, sw
+```

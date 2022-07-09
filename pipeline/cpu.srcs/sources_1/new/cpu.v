@@ -102,7 +102,8 @@ wire id_is_inst, exe_is_inst, mem_is_inst, wb_is_inst;
 wire [31:0] exe_wd;
 wire [31:0] mem_wd;
 
-wire rs1_forward, rs2_forward;
+wire [31:0] rs1_forward;
+wire [31:0] rs2_forward;
 
 /* END: ========== variable declaration ========== */
 
