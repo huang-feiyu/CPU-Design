@@ -10,8 +10,6 @@ module id_top(
     input  [4 :0] wr_i    ,
     input         regWEn_i,
 
-    output        re1_o   ,
-    output        re2_o   ,
     output [4 :0] rs1_o   ,
     output [4 :0] rs2_o   ,
     output [31:0] rd1_o   ,
@@ -59,8 +57,6 @@ imm_gen U_SEXT (
 
 control U_CTRL (
     .inst_i   (inst_i  ),
-    .re1_o    (re1_o   ),
-    .re2_o    (re2_o   ),
     .pcSel_o  (pcSel_o ),
     .regWEn_o (regWEn_o),
     .wbSel_o  (wbSel_o ),

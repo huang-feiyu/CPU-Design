@@ -19,8 +19,8 @@ reg [31:0] regfile [31:0];
 integer i;
 
 // read from RF
-assign rd1_o = regfile[rs1_i];
-assign rd2_o = regfile[rs2_i];
+assign rd1_o = regWEn_i && wr_i == rs1_i ? wd_i : regfile[rs1_i];
+assign rd2_o = regWEn_i && wr_i == rs2_i ? wd_i : regfile[rs2_i];
 
 // write to RF
 always @(posedge clk_i or negedge rst_n_i) begin

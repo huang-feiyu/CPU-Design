@@ -52,6 +52,8 @@ wire [4:0] id_wr    ;
 wire [31:0] exe_pc ;
 wire [31:0] exe_pc4;
 
+wire [4: 0] exe_rs1;
+wire [4: 0] exe_rs2;
 wire [31:0] exe_rd1;
 wire [31:0] exe_rd2;
 wire [31:0] exe_ext;
@@ -65,7 +67,6 @@ wire [4:0] exe_wr    ;
 wire [31:0] exe_aluC  ;
 wire        exe_branch;
 wire        exe_hz_br ;
-assign exe_hz_br = exe_branch;
 
 // signals MEM gets from EXE:
 // wire mem_memW;
@@ -93,10 +94,15 @@ wire [4: 0] wb_wr   ;
 wire [31:0] wb_wd;
 
 // HAZARD signals
-wire pc_stop, if_id_stop, id_exe_stop;
+wire pc_stop    , if_id_stop  ;
 wire if_id_flush, id_exe_flush;
 
 wire id_is_inst, exe_is_inst, mem_is_inst, wb_is_inst;
+
+wire [31:0] exe_wd;
+wire [31:0] mem_wd;
+
+wire rs1_forward, rs2_forward;
 
 /* END: ========== variable declaration ========== */
 
@@ -109,23 +115,27 @@ hazard_detector CPU_HZD (
     .clk_i         (clk         ),
     .rst_n_i       (rst_n_i     ),
 
-    .exe_branch_i  (exe_hz_br   ),
-    .id_re1_i      (id_re1      ),
-    .id_re2_i      (id_re2      ),
-    .id_rs1_i      (id_rs1      ),
-    .id_rs2_i      (id_rs2      ),
-    .exe_wr_i      (exe_wr      ),
+    .exe_branch_i  (exe_branch  ),
+    .exe_rs1_i     (exe_rs1     ),
+    .exe_rs2_i     (exe_rs2     ),
+    .exe_rd1_i     (exe_rd1     ),
+    .exe_rd2_i     (exe_rd2     ),
     .mem_wr_i      (mem_wr      ),
     .wb_wr_i       (wb_wr       ),
-    .exe_regWEn_i  (exe_regWEn  ),
     .mem_regWEn_i  (mem_regWEn  ),
     .wb_regWEn_i   (wb_regWEn   ),
+
+    .mem_wbSel_i   (mem_wbSel   ),
+    .mem_wd_i      (mem_wd      ),
+    .wb_wd_i       (wb_wd       ),
+
+    .rs1_f_o       (rs1_forward ),
+    .rs2_f_o       (rs2_forward ),
 
     .if_id_flush_o (if_id_flush ),
     .id_exe_flush_o(id_exe_flush),
     .pc_stop_o     (pc_stop     ),
-    .if_id_stop_o  (if_id_stop  ),
-    .id_exe_stop_o (id_exe_stop )
+    .if_id_stop_o  (if_id_stop  )
 );
 
 // IF
@@ -165,8 +175,6 @@ id_top CPU_ID (
     .wd_i     (wb_wd    ),
     .wr_i     (wb_wr    ),
     .regWEn_i (wb_regWEn),
-    .re1_o    (id_re1   ),
-    .re2_o    (id_re2   ),
     .rs1_o    (id_rs1   ),
     .rs2_o    (id_rs2   ),
     .rd1_o    (id_rd1   ),
@@ -191,7 +199,6 @@ id_exe_reg CPU_ID_EXE (
     .rst_n_i      (rst_n_i     ),
 
     .flush_i      (id_exe_flush),
-    .stop_i       (id_exe_stop ),
 
     .id_pc_i      (id_pc       ),
     .id_pc4_i     (id_pc4      ),
@@ -203,6 +210,8 @@ id_exe_reg CPU_ID_EXE (
     .id_brSel_i   (id_brSel    ),
     .id_memW_i    (id_memW     ),
     .id_ext_i     (id_ext      ),
+    .id_rs1_i     (id_rs1      ),
+    .id_rs2_i     (id_rs2      ),
     .id_rd1_i     (id_rd1      ),
     .id_rd2_i     (id_rd2      ),
     .id_wr_i      (id_wr       ),
@@ -218,6 +227,8 @@ id_exe_reg CPU_ID_EXE (
     .exe_brSel_o  (exe_brSel   ),
     .exe_memW_o   (exe_memW    ),
     .exe_ext_o    (exe_ext     ),
+    .exe_rs1_o    (exe_rs1     ),
+    .exe_rs2_o    (exe_rs2     ),
     .exe_rd1_o    (exe_rd1     ),
     .exe_rd2_o    (exe_rd2     ),
     .exe_wr_o     (exe_wr      ),
@@ -229,8 +240,8 @@ id_exe_reg CPU_ID_EXE (
 
 // EXE
 exe_top CPU_EXE (
-    .rd1_i    (exe_rd1   ),
-    .rd2_i    (exe_rd2   ),
+    .rd1_i    (rs1_forward),
+    .rd2_i    (rs2_forward),
     .pc_i     (exe_pc    ),
     .ext_i    (exe_ext   ),
     .aSel_i   (exe_aSel  ),
@@ -269,6 +280,15 @@ exe_mem_reg CPU_EXE_MEM (
 
     .exe_is_inst  (exe_is_inst),
     .mem_is_inst  (mem_is_inst)
+);
+
+// mem MUX
+wb_top CPU_MEM_MUX (
+    .wbSel_i  (mem_wbSel),
+    .aluC_i   (mem_aluC ),
+    .mem_rd_i (mem_aluC ), // NOTE: placeholder, need to wait for MEM to finish
+    .pc4_i    (mem_pc4  ),
+    .wd_o     (mem_wd   )
 );
 
 // MEM/WB
