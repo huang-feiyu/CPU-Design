@@ -593,7 +593,7 @@ hazard_detector CPU_HZD (
 <img src="https://user-images.githubusercontent.com/70138429/178104658-40a76f33-f450-40af-90cf-519bc6e0177c.png"></details>
 
 
-1. 第一次差分测试
+第一次差分测试
 
 <strong>*</strong> 写入 `x0` 错误 => bug16
 
@@ -605,7 +605,7 @@ hazard_detector CPU_HZD (
 > assign rd2_o = regWEn_i && wr_i == rs2_i && wr_i != 0 ? wd_i : regfile[rs2_i];
 ```
 
-2. 第二次差分测试
+第二次差分测试
 
 ```
 Passed Tests:
@@ -613,3 +613,26 @@ add, addi, and, andi, beq, bge, blt, bne, jal, jalr, lui, or, ori, simple, sll, 
 Failed Tests:
 auipc, bgeu, bltu, lb, lbu, lh, lhu, lw, sb, sh, slt, slti, sltiu, sltu, start, sw
 ```
+
+两条指令未通过 `lw`, `sw`.
+
+<strong>*</strong> load 暂停时写入数据出错, 寄存器出错 => bug17
+
+```diff
+// mem MUX
+wb_top CPU_MEM_MUX (
+    .wbSel_i  (mem_wbSel),
+    .aluC_i   (mem_aluC ),
+<   .mem_rd_i (mem_aluC ),
+---
+>   .mem_rd_i (mem_rd   ),
+    .pc4_i    (mem_pc4  ),
+    .wd_o     (mem_wd   )
+);
+```
+
+第三次差分测试
+
+仅 `sw` 未通过.
+
+<strong>*</strong> `wb_top` 中 `mem_rd_i` 恒为零, 意即: `sw` 无法读出数据 => bug18

@@ -89,6 +89,7 @@ wire [31:0] wb_pc   ;
 wire [31:0] wb_pc4  ;
 wire [1: 0] wb_wbSel;
 wire [4: 0] wb_wr   ;
+wire        wb_memW ;
 
 // signals WB generates
 wire [31:0] wb_wd;
@@ -287,7 +288,7 @@ exe_mem_reg CPU_EXE_MEM (
 wb_top CPU_MEM_MUX (
     .wbSel_i  (mem_wbSel),
     .aluC_i   (mem_aluC ),
-    .mem_rd_i (mem_aluC ), // NOTE: placeholder, need to wait for MEM to finish
+    .mem_rd_i (mem_rd   ), // NOTE: placeholder, need to wait for MEM to finish
     .pc4_i    (mem_pc4  ),
     .wd_o     (mem_wd   )
 );
@@ -314,6 +315,9 @@ mem_wb_reg CPU_MEM_WB (
     .wb_wbSel_o   (wb_wbSel  ),
     .wb_regWEn_o  (wb_regWEn ),
     .wb_wr_o      (wb_wr     ),
+
+    .mem_memW_i   (mem_memW  ),
+    .wb_memW_o    (wb_memW   ),
 
     .mem_is_inst  (mem_is_inst),
     .wb_is_inst   (wb_is_inst)

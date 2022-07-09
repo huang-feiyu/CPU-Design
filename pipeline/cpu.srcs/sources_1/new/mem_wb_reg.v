@@ -22,6 +22,9 @@ module mem_wb_reg(
     output reg        wb_regWEn_o ,
     output reg [4 :0] wb_wr_o     ,
 
+    input             mem_memW_i  ,
+    output            wb_memW_o   ,
+
     input             mem_is_inst,
     output reg        wb_is_inst
 );
@@ -69,6 +72,11 @@ end
 always @(posedge clk_i or negedge rst_n_i) begin
     if (~rst_n_i) wb_wr_o <= 'b0     ;
     else          wb_wr_o <= mem_wr_i;
+end
+
+always @(posedge clk_i or negedge rst_n_i) begin
+    if (~rst_n_i) wb_memW_o <= 'b0       ;
+    else          wb_memW_o <= mem_memW_i;
 end
 
 endmodule
