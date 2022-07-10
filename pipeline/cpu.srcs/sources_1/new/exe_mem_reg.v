@@ -24,7 +24,7 @@ module exe_mem_reg(
     output reg [31:0] mem_aluC_o  ,
     output reg        mem_branch_o,
 
-    input             exe_is_inst,
+    input             exe_is_inst ,
     output reg        mem_is_inst
 );
 

@@ -1,20 +1,22 @@
 `include "param.v"
+
 module cpu(
-    input         clk,
-    input         rst_n_i,
+    input         clk     ,
+    input         rst_n_i ,
+
+    input  [31:0] if_inst ,
+    output [31:0] if_pc   ,
+
+    input  [31:0] mem_rd  ,
+    output [31:0] mem_aluC,
+    output        mem_memW,
+    output [31:0] mem_rd2 ,
+
     output        debug_wb_have_inst,
     output [31:0] debug_wb_pc       ,
     output        debug_wb_ena      ,
     output [4: 0] debug_wb_reg      ,
-    output [31:0] debug_wb_value    ,
-
-    input  [31:0] if_inst,
-    output [31:0] if_pc,
-
-    input  [31:0] mem_rd,
-    output [31:0] mem_aluC,
-    output        mem_memW,
-    output [31:0] mem_rd2
+    output [31:0] debug_wb_value
 );
 
 assign debug_wb_have_inst = wb_is_inst;
@@ -26,9 +28,7 @@ assign debug_wb_value     = wb_wd     ;
 /* BEGIN: ========== variable declaration ========== */
 
 // signals IF generates:
-// wire [31:0] if_pc  ;
-wire [31:0] if_pc4 ;
-// wire [31:0] if_inst;
+wire [31:0] if_pc4;
 
 // singals ID gets from IF:
 wire [31:0] id_pc  ;
@@ -36,7 +36,6 @@ wire [31:0] id_pc4 ;
 wire [31:0] id_inst;
 
 // signals ID generates:
-wire id_re1,id_re2;
 wire [4: 0] id_rs1;
 wire [4: 0] id_rs2;
 wire [31:0] id_rd1;
@@ -66,20 +65,15 @@ wire [4:0] exe_wr    ;
 // signals EXE generates:
 wire [31:0] exe_aluC  ;
 wire        exe_branch;
-wire        exe_hz_br ;
 
 // signals MEM gets from EXE:
-// wire mem_memW;
 wire mem_regWEn, mem_branch;
 wire [31:0] mem_pc   ;
 wire [31:0] mem_pc4  ;
-// wire [31:0] mem_rd2  ;
 wire [1: 0] mem_wbSel;
 wire [4: 0] mem_wr   ;
-// wire [31:0] mem_aluC ;
 
 // signals MEM generates:
-// wire [31:0] mem_rd;
 
 // signals WB gets from MEM:
 wire wb_regWEn, wb_branch;
@@ -89,8 +83,6 @@ wire [31:0] wb_pc   ;
 wire [31:0] wb_pc4  ;
 wire [1: 0] wb_wbSel;
 wire [4: 0] wb_wr   ;
-wire        wb_memW ;
-wire [31:0] wb_rd2  ;
 
 // signals WB generates
 wire [31:0] wb_wd;
@@ -99,9 +91,10 @@ wire [31:0] wb_wd;
 wire pc_stop    , if_id_stop  ;
 wire if_id_flush, id_exe_flush;
 
+// TRACE
 wire id_is_inst, exe_is_inst, mem_is_inst, wb_is_inst;
 
-wire [31:0] exe_wd;
+// forward signals
 wire [31:0] mem_wd;
 
 wire [31:0] rs1_forward;
@@ -237,49 +230,49 @@ id_exe_reg CPU_ID_EXE (
     .exe_wr_o     (exe_wr      ),
     .exe_regWEn_o (exe_regWEn  ),
 
-    .id_is_inst   (id_is_inst),
-    .exe_is_inst  (exe_is_inst)
+    .id_is_inst   (id_is_inst  ),
+    .exe_is_inst  (exe_is_inst )
 );
 
 // EXE
 exe_top CPU_EXE (
     .rd1_i    (rs1_forward),
     .rd2_i    (rs2_forward),
-    .pc_i     (exe_pc    ),
-    .ext_i    (exe_ext   ),
-    .aSel_i   (exe_aSel  ),
-    .bSel_i   (exe_bSel  ),
-    .aluSel_i (exe_aluSel),
-    .brSel_i  (exe_brSel ),
-    .pcSel_i  (exe_pcSel ),
-    .aluC_o   (exe_aluC  ),
-    .branch_o (exe_branch)
+    .pc_i     (exe_pc     ),
+    .ext_i    (exe_ext    ),
+    .aSel_i   (exe_aSel   ),
+    .bSel_i   (exe_bSel   ),
+    .aluSel_i (exe_aluSel ),
+    .brSel_i  (exe_brSel  ),
+    .pcSel_i  (exe_pcSel  ),
+    .aluC_o   (exe_aluC   ),
+    .branch_o (exe_branch )
 );
 
 // EXE/MEM
 exe_mem_reg CPU_EXE_MEM (
-    .clk_i        (clk       ),
-    .rst_n_i      (rst_n_i   ),
+    .clk_i        (clk        ),
+    .rst_n_i      (rst_n_i    ),
 
     .exe_rd2_i    (rs2_forward),
-    .exe_memW_i   (exe_memW  ),
-    .exe_regWEn_i (exe_regWEn),
-    .exe_wbSel_i  (exe_wbSel ),
-    .exe_wr_i     (exe_wr    ),
-    .exe_pc_i     (exe_pc    ),
-    .exe_pc4_i    (exe_pc4   ),
-    .exe_aluC_i   (exe_aluC  ),
-    .exe_branch_i (exe_branch),
+    .exe_memW_i   (exe_memW   ),
+    .exe_regWEn_i (exe_regWEn ),
+    .exe_wbSel_i  (exe_wbSel  ),
+    .exe_wr_i     (exe_wr     ),
+    .exe_pc_i     (exe_pc     ),
+    .exe_pc4_i    (exe_pc4    ),
+    .exe_aluC_i   (exe_aluC   ),
+    .exe_branch_i (exe_branch ),
 
-    .mem_rd2_o    (mem_rd2   ),
-    .mem_memW_o   (mem_memW  ),
-    .mem_regWEn_o (mem_regWEn),
-    .mem_wbSel_o  (mem_wbSel ),
-    .mem_wr_o     (mem_wr    ),
-    .mem_pc_o     (mem_pc    ),
-    .mem_pc4_o    (mem_pc4   ),
-    .mem_aluC_o   (mem_aluC  ),
-    .mem_branch_o (mem_branch),
+    .mem_rd2_o    (mem_rd2    ),
+    .mem_memW_o   (mem_memW   ),
+    .mem_regWEn_o (mem_regWEn ),
+    .mem_wbSel_o  (mem_wbSel  ),
+    .mem_wr_o     (mem_wr     ),
+    .mem_pc_o     (mem_pc     ),
+    .mem_pc4_o    (mem_pc4    ),
+    .mem_aluC_o   (mem_aluC   ),
+    .mem_branch_o (mem_branch ),
 
     .exe_is_inst  (exe_is_inst),
     .mem_is_inst  (mem_is_inst)
@@ -289,7 +282,7 @@ exe_mem_reg CPU_EXE_MEM (
 wb_top CPU_MEM_MUX (
     .wbSel_i  (mem_wbSel),
     .aluC_i   (mem_aluC ),
-    .mem_rd_i (mem_rd   ), // NOTE: placeholder, need to wait for MEM to finish
+    .mem_rd_i (mem_rd   ),
     .pc4_i    (mem_pc4  ),
     .wd_o     (mem_wd   )
 );
@@ -318,7 +311,7 @@ mem_wb_reg CPU_MEM_WB (
     .wb_wr_o      (wb_wr     ),
 
     .mem_is_inst  (mem_is_inst),
-    .wb_is_inst   (wb_is_inst)
+    .wb_is_inst   (wb_is_inst )
 );
 
 // WB

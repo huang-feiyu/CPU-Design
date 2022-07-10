@@ -1,30 +1,30 @@
 `include "param.v"
 
 module hazard_detector(
-    input         clk_i         ,
-    input         rst_n_i       ,
+    input             clk_i         ,
+    input             rst_n_i       ,
 
-    input         exe_branch_i  ,
-    input  [4 :0] exe_rs1_i     ,
-    input  [4 :0] exe_rs2_i     ,
-    input  [31:0] exe_rd1_i     ,
-    input  [31:0] exe_rd2_i     ,
-    input  [4 :0] mem_wr_i      ,
-    input  [4 :0] wb_wr_i       ,
-    input         mem_regWEn_i  ,
-    input         wb_regWEn_i   ,
+    input             exe_branch_i  ,
+    input      [4 :0] exe_rs1_i     ,
+    input      [4 :0] exe_rs2_i     ,
+    input      [31:0] exe_rd1_i     ,
+    input      [31:0] exe_rd2_i     ,
+    input      [4 :0] mem_wr_i      ,
+    input      [4 :0] wb_wr_i       ,
+    input             mem_regWEn_i  ,
+    input             wb_regWEn_i   ,
 
-    input  [1 :0] mem_wbSel_i   ,
-    input  [31:0] mem_wd_i      ,
-    input  [31:0] wb_wd_i       ,
+    input      [1 :0] mem_wbSel_i   ,
+    input      [31:0] mem_wd_i      ,
+    input      [31:0] wb_wd_i       ,
 
-    output reg [31:0] rs1_f_o   ,
-    output reg [31:0] rs2_f_o   ,
+    output reg [31:0] rs1_f_o       ,
+    output reg [31:0] rs2_f_o       ,
 
-    output reg    if_id_flush_o ,
-    output reg    id_exe_flush_o,
-    output reg    pc_stop_o     ,
-    output reg    if_id_stop_o
+    output reg        if_id_flush_o ,
+    output reg        id_exe_flush_o,
+    output reg        pc_stop_o     ,
+    output reg        if_id_stop_o
 );
 
 wire rs1_exe_mem_hazard, rs2_exe_mem_hazard;

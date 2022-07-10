@@ -12,27 +12,28 @@ module top(
 wire rst_n_i;
 assign rst_n_i = rst_n;
 
-wire [31:0] if_pc  ;
-wire [31:0] if_inst;
-wire mem_memW;
-wire [31:0] mem_rd2  ;
-wire [31:0] mem_aluC ;
-wire [31:0] mem_rd;
+wire [31:0] if_pc   ;
+wire [31:0] if_inst ;
+wire [31:0] mem_rd2 ;
+wire [31:0] mem_aluC;
+wire [31:0] mem_rd  ;
+wire        mem_memW;
 
 cpu CPU_CORE (
-    .clk (clk),
-    .rst_n_i (rst_n_i),
-    .debug_wb_have_inst (debug_wb_have_inst),
-    .debug_wb_pc (debug_wb_pc),
-    .debug_wb_ena (debug_wb_ena),
-    .debug_wb_reg (debug_wb_reg),
-    .debug_wb_value (debug_wb_value),
-    .if_inst (if_inst),
-    .if_pc (if_pc),
-    .mem_rd (mem_rd),
+    .clk      (clk     ),
+    .rst_n_i  (rst_n_i ),
+    .if_inst  (if_inst ),
+    .if_pc    (if_pc   ),
+    .mem_rd   (mem_rd  ),
     .mem_aluC (mem_aluC),
     .mem_memW (mem_memW),
-    .mem_rd2 (mem_rd2)
+    .mem_rd2  (mem_rd2 ),
+
+    .debug_wb_have_inst (debug_wb_have_inst),
+    .debug_wb_pc        (debug_wb_pc       ),
+    .debug_wb_ena       (debug_wb_ena      ),
+    .debug_wb_reg       (debug_wb_reg      ),
+    .debug_wb_value     (debug_wb_value    )
 );
 
 inst_mem imem(

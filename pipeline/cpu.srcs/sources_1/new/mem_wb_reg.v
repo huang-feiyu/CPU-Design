@@ -22,7 +22,7 @@ module mem_wb_reg(
     output reg        wb_regWEn_o ,
     output reg [4 :0] wb_wr_o     ,
 
-    input             mem_is_inst,
+    input             mem_is_inst ,
     output reg        wb_is_inst
 );
 

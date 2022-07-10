@@ -33,9 +33,9 @@ wire brUn, mem;
 wire [2:0] immSel;
 
 assign is_inst = inst_i[6:0] != 0;
-assign wr_o  = inst_i[11:7 ];
-assign rs1_o = inst_i[19:15];
-assign rs2_o = inst_i[24:20];
+assign wr_o    = inst_i[11:7 ];
+assign rs1_o   = inst_i[19:15];
+assign rs2_o   = inst_i[24:20];
 
 reg_file U_RF (
     .clk_i    (clk_i   ),
