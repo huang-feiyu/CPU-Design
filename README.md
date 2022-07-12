@@ -2,7 +2,7 @@
 
 > HITsz 计算机设计与实践课程, [Website](https://hitsz-cslab.gitee.io/cpu/).
 
-简单实现笔记与 Debug 过程.
+简单实现笔记与 Debug 过程; 由于是使用实验室电脑下板验证, 有些代码是进行过简单的修改的, 不保证仓库内项目的下板验证正确性.
 
 [TOC]
 
